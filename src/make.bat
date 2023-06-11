@@ -36,12 +36,18 @@ md package
 
 rd /S /Q "%binFolder%"
 md "%binFolder%"
+copy forms.py "%binFolder%"
 copy main.py "%binFolder%"
+copy wxApp.py "%binFolder%"
 copy pageBrowse.py "%binFolder%"
 copy pageMeasure.py "%binFolder%"
+copy pageLightSourceResults.py  "%binFolder%"
+copy pageHelp.py "%binFolder%"
+copy Help.html "%binFolder%"
 copy FolderWatch.py "%binFolder%"
 copy CommandPipe.py "%binFolder%"
 copy run.bat "%binFolder%"
+copy Product.ico "%binFolder%"
 robocopy "%pythonDir%" "%binFolder%\python" /s
 robocopy "%iconsDir%" "%binFolder%\icons" /s
 robocopy "%macrosDir%" "%binFolder%\macros" /s

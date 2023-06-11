@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?include ProductVersion.wxi?>
+	<Product Id="*" UpgradeCode="E59C8AB9-4420-4FB1-9CD3-126BCAB9F65C" Language="1033" Manufacturer="QUAREP" Name="QUAREP-LiMi Tool Kit $(var.ProductVersion)" Version="$(var.ProductVersion)">
+		<Package InstallScope="perMachine" Compressed="yes"/>
+		<MediaTemplate EmbedCab="yes"/>
+		<Icon Id="Product.ico" SourceFile="Product.ico"/>
+		<Property Id="ARPPRODUCTICON" Value="Product.ico"/>
+		<MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="no" AllowSameVersionUpgrades="no" DowngradeErrorMessage="A newer version of [ProductName] is already installed."/>
+		<UIRef Id="WixUI_InstallDir"/>
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/>
+		<WixVariable Id="WixUIBannerBmp" Value="QUAREP_logo_icon_740x88.png"/>
+		<WixVariable Id="WixUILicenseRtf" Value="license.rtf"/>
+		<WixVariable Id="WixUIDialogBmp" Value="QUAREP_logo_full_772x488.png"/>
+		<!--
+		<WixVariable Id="iconDir" Value="will this show up anywhere ?" />
+    -->
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="QuaRepProgramFilesFolder" Name="QuaRep">
+					<Directory Id="INSTALLFOLDER" Name="QUAREP-LiMi Tool Kit">
+						<Directory Id="pythonDir" Name="python"/>
+						<Directory Id="iconsDir" Name="icons"/>
+						<Directory Id="macrosDir" Name="macros"/>
+					</Directory>
+				</Directory>
+				<Directory Id="ProgramMenuFolder">
+					<Directory Id="QuaRepProgramMenuFolder" Name="QUAREP-LiMi">
+						<Directory Id="QuaRepToolKitStartMenuFolder" Name="QUAREP-LiMi Tool Kit"/>
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+		<Component Id="mainComponent" Directory="INSTALLFOLDER" Guid="{66628E08-A530-4E2E-8F0D-E61599A2C0A1}">
+			<File Id="main" Source="run.bat" KeyPath="yes">
+				<Shortcut Id="StartMenuShortcut" Name="QUAREP-LiMi Tool Kit" Description="QUAREP-LiMiTool Kit" Advertise="yes" Directory="QuaRepToolKitStartMenuFolder" WorkingDirectory="INSTALLFOLDER" Icon="Product.ico"/>
+			</File>
+			<File Id="mainpy" Source="main.py"/>
+			<File Id="formspy" Source="forms.py"/>
+			<File Id="pagebrowsepy" Source="pageBrowse.py"/>
+			<File Id="pagemeasurepy" Source="pageMeasure.py"/>
+			<File Id="pagelightsourceresultspy" Source="pageLightSourceResults.py"/>
+			<File Id="pagehelppy" Source="pageHelp.py"/>
+			<File Id="helphtml" Source="Help.html"/>
+			<File Id="folderwatchpy" Source="FolderWatch.py"/>
+			<File Id="commandpipepy" Source="CommandPipe.py"/>
+			<File Id="wxapppy" Source="wxApp.py"/>
+			<File Id="ProductIco" Source="Product.ico"/>
+			<RemoveFolder Id="RemoveQuaRepDatabaseStartMenuFolder" Directory="QuaRepToolKitStartMenuFolder" On="uninstall"/>
+			<RemoveFolder Id="RemoveQuaRepProgramMenuFolder" Directory="QuaRepProgramMenuFolder" On="uninstall"/>
+		</Component>
+		<Feature Id="mainFeature">
+			<ComponentRef Id="mainComponent"/>
+			<ComponentGroupRef Id="cgPythonFiles"/>
+			<ComponentGroupRef Id="cgIconsFiles"/>
+			<ComponentGroupRef Id="cgMacrosFiles"/>
+		</Feature>
+	</Product>
+</Wix>

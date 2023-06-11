@@ -9,4 +9,5 @@ It supports measuring and visualization of power linearity and stability on Niko
 Support for other brands and measurements is in progress.
 
 The release is distributed as a windows installer package and a portable version in a .zip file.
+
 https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/releases

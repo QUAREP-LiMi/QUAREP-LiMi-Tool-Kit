@@ -33,14 +33,14 @@ The first time, press the 'Settings' button and fill in the details of your ligh
 
 Next, connect and power your power meter and press the 'Meter' button to check the connection:
 
-![QLTK_macro](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/a29f1bee-7a9e-4cf8-9365-3157df4fe60a)
+![QLTK_meter](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/aea9da5a-cb09-4f1d-b394-9d4f5d51b3c2)
 
 The main macro dialog show the protocol settings on the left.\
 Configure them as desired.\
 On the right all light source lines are listed.\
 Create an OC for each line and set the desired powers for the 'low power' and 'high power' measurements:
 
-![QLTK_meter](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/aea9da5a-cb09-4f1d-b394-9d4f5d51b3c2)
+![QLTK_macro](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/a29f1bee-7a9e-4cf8-9365-3157df4fe60a)
 
 Finally, press the 'Start' button to start the measurement.\
 Enter the measurement details in the 'Information' dialog and press 'Start' to really start:

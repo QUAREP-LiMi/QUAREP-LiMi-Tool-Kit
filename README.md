@@ -14,6 +14,7 @@ Requirements:
 - Nikon point-scan confocal is not (yet) supported
 
 Support for other brands and measurements is in progress.
+A python distribution is included, check out the comments in the main.py file to learn module requirements.
 
 ## Installation
 Install the package or unpack the archive to the microscope PC or a portable storage device.

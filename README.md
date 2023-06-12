@@ -47,7 +47,7 @@ Enter the measurement details in the 'Information' dialog and press 'Start' to r
 
 ![QLTK_info](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/9a327c28-cc2c-486d-abcf-baf457fe4ef7)
 
-A progress dialog will show the activity and last measure power:
+A progress dialog will show the activity and last measured power:
 
 ![QLTK_progress](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/96a50d0d-bf54-413f-8ecd-34e3c97bc4a6)
 

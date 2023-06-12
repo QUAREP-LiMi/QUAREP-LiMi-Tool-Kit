@@ -56,7 +56,8 @@ The first time, enter the location of the measurement results (defaults to c:\QU
 On the left top panel, all illuminators are listed.
 The left bottom panel shows the dates for which measurements are available.
 The right hand panel shows the measurements results.
-Use the buttons on the top to filter for which lines or protocols the results are shown:
+Use the buttons on the top to filter for which lines or protocols the results are shown.
+The information panel can be edited to add extra information.
 
 ![QLTK_Results](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/d4281b29-8053-473f-a40d-1961eb7ddab8)
 

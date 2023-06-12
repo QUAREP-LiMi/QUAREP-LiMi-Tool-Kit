@@ -7,7 +7,7 @@ Version 0.1.14 is the first release.\
 https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/releases \
 This version was tested during the QUAREP workshops at ELMI 2023 in the Netherlands.
 
-Version 0.1.14 supports measuring and visualization of illumination power linearity and stability on  Nikon microscope system.
+Version 0.1.14 supports measuring and visualization of illumination power linearity and stability on  Nikon microscope system.\
 Requirements:
 - Thorlabs power meter + optional thermometer
 - NIS-AR or NIS-BR + advanced interpreter license

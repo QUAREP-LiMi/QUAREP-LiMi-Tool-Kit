@@ -2,6 +2,7 @@
 Automation tools for microscope quality assessment.
 
 The tool kit is a python script to start quality measurements, analyze them and show the results.
+It acts as a minimal glue between different existing solutions.
 
 Version 0.1.14 is the first release.\
 https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/releases \

@@ -11,8 +11,8 @@ Version 0.1.14 supports visualization of illumination power linearity and stabil
 Macros for automatic measurements on Nikon microscope system are included in the tool kit. \
 Scripts for Zeiss systems can be found here: https://github.com/QUAREP-LiMi/WG1-Automation/tree/main/Microscope_Systems. 
 
-Requirements:
-- Thorlabs power meter + optional thermometer
+Requirements for the Nikon automation:
+- Thorlabs power meter + optional thermometer (PM100A, PM100D, PM100USB, PM400)
 - NIS-AR or NIS-BR + advanced interpreter license
 - Nikon point-scan confocal is not (yet) supported
 

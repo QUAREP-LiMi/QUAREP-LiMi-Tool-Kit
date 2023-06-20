@@ -1,5 +1,6 @@
 import os
 import subprocess, shlex
+import win32com.shell.shell as shell
 import wx
 from forms import *
 from wxApp import *
@@ -40,8 +41,9 @@ class pageMeasure(formMeasure):
 
 
     def installNikonMacros(self):
-        command = os.path.join(os.path.dirname(__file__),"macros\\MeasurePowerDialog17.exe")
-        subprocess.run(command)
+        command = os.path.join(os.path.dirname(__file__),"macros\\MeasurePowerDialog18.exe")
+        #subprocess.run(command)
+        shell.ShellExecuteEx(lpVerb='runas', lpFile=command)
 
 
     def setBrand(self, index):

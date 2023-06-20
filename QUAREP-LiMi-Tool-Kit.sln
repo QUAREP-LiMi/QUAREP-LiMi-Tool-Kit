@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "QUAREP-LiMi-Tool-Kit", "src\QUAREP-LiMi-Tool-Kit.pyproj", "{5A4C5E73-A40F-488B-A8CB-B40F7A0C5835}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A4C5E73-A40F-488B-A8CB-B40F7A0C5835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A4C5E73-A40F-488B-A8CB-B40F7A0C5835}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D023F822-F005-45A6-9D70-FB0D9410B68C}
+	EndGlobalSection
+EndGlobal

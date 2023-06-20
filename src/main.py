@@ -4,13 +4,15 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.1.14"
-__date__ = "2023-06-02"
+__version__ = "0.1.15"
+__date__ = "2023-06-20"
 
 import wx
 
 '''
 history
+2023-06-20: 15 Kees:
+    Nikon macros version 18: included vc 2022 runtime libraries
 2023-06-04: 14 Kees:
     fixed python bugs in Measure page
     added m_pages library

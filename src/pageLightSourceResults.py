@@ -13,6 +13,7 @@ import win32security
 import wx.lib.agw.persist as PM
 #from wx.lib.plot import PlotCanvas, PlotGraphics, PolyLine, PolyMarker
 import wxmplot
+import numpy as np
 import matplotlib.pyplot as mpl;
 
 from FolderWatch import *  # requires pyWin32
@@ -22,7 +23,7 @@ from wxApp import *
 g_showTemperature = 1
 
 g_widgetScale = 3
-g_widgetSize = wx.Size(400, 300)
+g_widgetSize = wx.Size(400, 400)
 
 def get_widget_scale():
     return g_widgetScale
@@ -233,6 +234,10 @@ def ParsePowerCsv(panel, data, filename):
     # file.close()
 
 
+def calcNormalizedStandardDeviation(data):
+     return 100. * np.std(data) / np.mean(data)
+
+
 class GraphFrame(wx.Panel):
 
     def __init__(self, parent, title, datafile):
@@ -258,9 +263,10 @@ class GraphFrame(wx.Panel):
         """
         self.plot = wxmplot.PlotPanel(self)
         self.sizer.Add(self.plot, 1, wx.EXPAND | wx.ALL, 0)
-
         self.results = wx.StaticText(self, wx.ID_ANY, "results:", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTER)
-        self.sizer.Add(self.results, 0, wx.EXPAND | wx.BOTTOM | wx.LEFT | wx.RIGHT, 10)
+        self.results.SetFont(
+            wx.Font(7, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString))
+        self.sizer.Add(self.results, 0, wx.EXPAND | wx.BOTTOM | wx.LEFT | wx.RIGHT, 0)
         self.SetSizer(self.sizer)
         self.Layout()
         self.Draw()
@@ -314,8 +320,8 @@ class GraphFrame(wx.Panel):
         self.show_temperature = g_showTemperature
         if self.first_time:
             self.x_unit = data.x_unit
-            params = dict(delay_draw=True, fullbox=False, bgcolor="#FFFFFF", framecolor="#FFFFFF", titlefontsize=8,
-                          labelfontsize=6, linewidth=1)
+            params = dict(delay_draw=True, fullbox=False, bgcolor="#FFFFFF", framecolor="#FFFFFF", titlefontsize=6,
+                          labelfontsize=4, linewidth=1)
             if len(data.x_data) < 20:
                 params['marker'] = '+'
             self.plot.plot(data.x_data, data.y_data, title=self.title, xlabel=data.x_label + " [" + data.x_unit + "]",
@@ -351,7 +357,7 @@ class GraphFrame(wx.Panel):
         if len(splitted) > 2:
             self.line_name = splitted[1]
         more_ports = 0
-        if len(splitted) > 4:
+        if (len(splitted) > 4) or ((len(splitted) == 4) and (splitted[3] == "linear")):
             more_ports = 1
             self.port = splitted[2]
         if len(splitted) > (2 + more_ports):
@@ -361,15 +367,27 @@ class GraphFrame(wx.Panel):
 
     def Analyse(self, x_data, y_data):
         if hasattr(self, 'protocol') and self.protocol == 'linear':
-            self.results.SetLabel("linearity: ")
+            try:
+                model = np.polyfit(x_data, y_data, 1)
+                a = model[0]
+                b = model[1]
+                chi2 = 0
+                for i, t in enumerate(x_data):
+                    v = a * x_data[i] + b
+                    chi2 += pow(y_data[i] - v,2) / v
+                self.results.SetLabel("linearity chi2: " + "{:f}".format(chi2))
+            except Exception:
+                self.results.SetLabel("linearity fit failed")
         else:
             minVal = float(min(y_data))
             maxVal = float(max(y_data))
             stability = 100. * (1. - ((maxVal - minVal) / (maxVal + minVal)))
-            self.results.SetLabel("stability: " + "{:.0f}".format(stability) + "%   min: " + "{:.3f}".format(
-                minVal) + "   max: " + "{:.3f}".format(maxVal))
+            #cv = np.cov(y_data)
+            nsd = calcNormalizedStandardDeviation(y_data)
+            self.results.SetLabel("N: " + "{:d}".format(len(y_data)) + ", min: " + "{:.1f}".format(minVal) +
+                ", max: " + "{:.1f}".format(maxVal) + ", stability: " + "{:.0f}".format(stability) +
+                "%, nsd: " + "{:.2f}".format(nsd) + "%")
         self.GetSizer().Layout()
-
 
 
 class pageLightSourceResults(panelTwoPanes):
@@ -391,6 +409,9 @@ class pageLightSourceResults(panelTwoPanes):
         self.filterPower = {}
         self.set_widget_scale(wxGetApp().config.Read("widgetScale"))
         self.initTrees()
+
+    def onDestroy(self):
+        pass
 
     def set_widget_scale(self, scale):
         try:

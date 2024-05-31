@@ -19,12 +19,20 @@ from FolderWatch import *  # requires pyWin32
 from forms import *
 from wxApp import *
 from pageLightSourceResults import *
+from pageDetectorResults import *
+
+def check_folder(folder):
+    if(not os.path.exists(folder)):
+        os.mkdir(folder)
 
 class pageBrowse(formBrowse):
 
     def __init__(self, parent):
         formBrowse.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL, 'browseFrame')
-        self.categories = {"Light Sources": {"name": "Light Sources", "folder":"Light Sources", "class": pageLightSourceResults }}
+        self.categories = {
+            "Detectors": {"name": "Detectors", "folder":"Detectors", "class": pageDetectorResults },
+            "Light Sources": {"name": "Light Sources", "folder": "Light Sources", "class": pageLightSourceResults}
+        }
         self.m_rightPanel = None
         self.dataFileWatch = None
         self.deviceFolderWatch = None
@@ -40,12 +48,14 @@ class pageBrowse(formBrowse):
 
         self.initDeviceTree()
 
-        self.init_type = ""
+        self.init_category = ""
         self.init_device = ""
         self.SetFolder(self.folder)
         # self.canvas = Canvas(self.m_rightPanel, size=(0, 0))
         # self.CreatePrintData()
 
+    def onDestroy(self):
+        self.clearRightPanel()
 
     def SetActiveFolder(self, folder):
         folder, unit = os.path.split(folder)
@@ -53,7 +63,7 @@ class pageBrowse(formBrowse):
         folder, category = os.path.split(folder)
         for cat in self.categories:
             if self.categories[cat]["folder"].lower() == category.lower():
-                self.init_type = cat
+                self.init_category = cat
                 self.init_device = model + " " + unit
                 self.SetFolder(folder)
                 return
@@ -79,14 +89,23 @@ class pageBrowse(formBrowse):
         self.folder = folder
         # self.folder = self.folder.replace("\\", "/")
         self.m_folder.SetPath(self.folder)
+        check_folder(folder)
+        check_folder(os.path.join(folder,"Detectors"))
+        check_folder(os.path.join(folder,"Light Sources"))
         self.populateDeviceTree()
 
     def populateDeviceTree(self):
         self.deviceTi = None
-        self.m_treeDevices.DeleteAllItems()
+        tree = self.m_treeDevices
+        tree.DeleteAllItems()
         for cat in self.categories:
-            self.populateDevices(self.m_treeDevices, self.categories[cat])
-        self.init_type = ""
+            self.populateDevices(tree, self.categories[cat])
+        item = tree.GetSelection()
+        if not item or (item is not self.deviceTi):
+            tree.Select(self.deviceTi)
+            self.onSelectDevice(self.deviceTi)
+        self.init_category = ""
+        self.init_device = ""
 
     def m_folderOnDirChanged(self, event):
         event.Skip()
@@ -119,7 +138,6 @@ class pageBrowse(formBrowse):
     def populateDevices(self, tree, category):
         name = category["name"]
         devices = tree.AppendItem(tree.GetRootItem(), name)
-        first_device = None
         folder = category["folder"]
         path = os.path.join(self.folder,folder)
         if not os.path.isdir(path):
@@ -139,32 +157,43 @@ class pageBrowse(formBrowse):
                     label = model + " " + units[0]
                     uti = tree.AppendItem(devices, label)
                     tree.SetItemData(uti, {"folder": os.path.join(model_folder, units[0]), "category": category})
-                    if label == self.init_device:
-                        first_device = uti
-                    if first_device is None:
-                        first_device = uti
+                    if category['folder'] == self.init_category and label == self.init_device:
+                        self.deviceTi = uti
+                    if self.deviceTi is None:
+                        self.deviceTi = uti
                 else:
                     mti = tree.AppendItem(devices, model)
                     for unit in units:
                         label = model + " " + unit
                         uti = tree.AppendItem(mti, label)
                         tree.SetItemData(uti, {"folder": os.path.join(model_folder, unit), "category": category})
-                        if label == self.init_device:
-                            first_device = uti
-                        if first_device is None:
-                            first_device = uti
+                        if category['folder'] == self.init_category and label == self.init_device:
+                            self.deviceTi = uti
+                        if self.deviceTi is None:
+                            self.deviceTi = uti
                     tree.Expand(mti)
         tree.Expand(devices)
-        if first_device is not None:
-            tree.Select(first_device)
-            self.onSelectDevice(first_device)
-        self.init_device = ""
 
     def m_treeDevicesOnTreelistSelectionChanged(self, event):
         event.Skip()
         tree = self.m_treeDevices
         ti = tree.GetSelection()
         self.onSelectDevice(ti)
+
+    def clearRightPanel(self):
+        if self.m_rightPanel:
+            self.m_rightPanel.onDestroy()
+            self.m_rightPanel.Destroy()
+        self.m_rightPanel = None
+
+    def createRightPanel(self, category):
+        self.m_mainSplitter.Unsplit(self.m_rightPanel)
+        self.clearRightPanel()
+        self.m_rightPanel = category["class"](self, self.m_mainSplitter)
+        self.m_mainSplitter.SplitVertically(self.m_leftPanel, self.m_rightPanel, 300)
+        self.Layout()
+        self.Update()
+        self.category = category["name"]
 
     def onSelectDevice(self, ti):
         self.saveModified(wx.YES_NO)
@@ -177,14 +206,13 @@ class pageBrowse(formBrowse):
             return
 
         data = tree.GetItemData(ti)
+        if data is None:
+            if self.deviceTi != None and self.deviceTi.IsOk():
+                tree.Select(self.deviceTi)
+            return
         category = data["category"]
         if self.category != category["name"]:
-            # todo: delete m_rightPanel if not None ?
-            self.m_rightPanel = category["class"](self, self.m_mainSplitter)
-            self.m_mainSplitter.SplitVertically(self.m_leftPanel, self.m_rightPanel, 300)
-            self.Layout()
-            self.Update()
-            self.category = category["name"]
+            self.createRightPanel(category)
         self.deviceTi = ti
         self.deviceFolder = data["folder"]
         self.m_rightPanel.onSelectDevice(ti)

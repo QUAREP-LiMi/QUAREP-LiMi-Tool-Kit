@@ -9,44 +9,62 @@ echo ^<Include^>
 echo  ^<?define ProductVersion=%v%?^>
 echo ^</Include^> 
 )
-set wxsFileName=Product.wxs
-set wixobjFileName=Product.wixobj
+
 set msiFileName=%ProjectName%_%v%.msi
 set binFolder=%ProjectName%_%v%
-set pythonDir=py39
-set pythonFiles=python_files
-set iconsDir=icons
-set iconsFiles=icons_files
-set macrosDir=macros
-set macrosFiles=macros_files
-set wixext=-ext "%WIX%\bin\WixUtilExtension.dll" -ext "%WIX%\bin\WixDifxAppExtension.dll" -ext "%WIX%\bin\WixUIExtension.dll" 
+set wixext=-ext "%WIX%\bin\WixUtilExtension.dll" -ext "%WIX%\bin\WixDifxAppExtension.dll" -ext "%WIX%\bin\WixUIExtension.dll"
 
-for /d /r %pythonDir% %%d in ("__pycache__") do @if exist "%%d" rd /s /q "%%d"
-
+for /d /r python %%d in ("__pycache__") do @if exist "%%d" rd /s /q "%%d"
+rd obj /S /Q
 md obj
 md package
-"%WIX%\bin\candle.exe" -arch x64 %wxsFileName%  -out obj\%wixobjFileName%
-"%WIX%\bin\heat.exe" dir "%pythonDir%" -cg cgPythonFiles -gg -scom -sreg -sfrag -srd -dr pythonDir -var env.pythonDir -out "obj\%pythonFiles%.wxs"
-"%WIX%\bin\candle.exe" -arch x64 obj\%pythonFiles%.wxs -out obj\%pythonFiles%.wixobj
-"%WIX%\bin\heat.exe" dir "%iconsDir%" -cg cgIconsFiles -gg -scom -sreg -sfrag -srd -dr iconsDir -var env.iconsDir -out "obj\%iconsFiles%.wxs"
-"%WIX%\bin\candle.exe" -arch x64 obj\%iconsFiles%.wxs -out obj\%iconsFiles%.wixobj
-"%WIX%\bin\heat.exe" dir "%macrosDir%" -cg cgMacrosFiles -gg -scom -sreg -sfrag -srd -dr macrosDir -var env.macrosDir -out "obj\%macrosFiles%.wxs"
-"%WIX%\bin\candle.exe" -arch x64 obj\%macrosFiles%.wxs -out obj\%macrosFiles%.wixobj
-"%WIX%\bin\light.exe" %wixext% obj\%wixobjFileName% obj\%pythonFiles%.wixobj obj\%iconsFiles%.wixobj obj\%macrosFiles%.wixobj -out package\%msiFileName%
+
+"%WIX%\bin\candle.exe" -arch x64 Product.wxs  -out obj\Product.wixobj
+set objs=obj\Product.wixobj
+call :subdir python python
+call :subdir icons icons
+call :subdir macros macros
+call :subdir vips vips
+call :subdir lunasvg lunasvg
+call :subdir caltool caltool
+
+"%WIX%\bin\light.exe" -sice:ICE60 %wixext% %objs% -out package\%msiFileName%
 
 rd /S /Q "%binFolder%"
 md "%binFolder%"
+copy cli_calibration_tool_help.txt "%binFolder%"
+copy CommandPipe.py "%binFolder%"
+copy DetectorPhotonCalibration.py "%binFolder%"
+copy FolderWatch.py "%binFolder%"
+copy pageDetectorResults.py "%binFolder%"
+copy forms.py "%binFolder%"
 copy main.py "%binFolder%"
 copy pageBrowse.py "%binFolder%"
+copy pageDetectorResults.py "%binFolder%"
+copy pageHelp.py "%binFolder%"
+copy pageLightSourceResults.py "%binFolder%"
 copy pageMeasure.py "%binFolder%"
-copy FolderWatch.py "%binFolder%"
-copy CommandPipe.py "%binFolder%"
+copy wxApp.py "%binFolder%"
 copy run.bat "%binFolder%"
-robocopy "%pythonDir%" "%binFolder%\python" /s
-robocopy "%iconsDir%" "%binFolder%\icons" /s
-robocopy "%macrosDir%" "%binFolder%\macros" /s
-
+copy run_debug.bat "%binFolder%"
+robocopy python "%binFolder%\python" /s
+robocopy icons "%binFolder%\icons" /s
+robocopy macros "%binFolder%\macros" /s
+robocopy vipos "%binFolder%\vips" /s
+robocopy lunasvg "%binFolder%\lunasvg" /s
+robocopy caltool "%binFolder%\caltool" /s
 "%ZIP%" a "package\%binFolder%.zip" "%binFolder%"
 
 popd
 endlocal
+goto :eof
+
+:subdir
+set source=%1
+set target=%2
+set targetDir=%2
+"%WIX%\bin\heat.exe" dir "%source%" -cg cg%target%Files -gg -scom -sreg -sfrag -srd -dr %target%Dir -var env.targetDir -out "obj\%target%Files.wxs"
+"%WIX%\bin\candle.exe" -arch x64 obj\%target%Files.wxs -out obj\%target%Files.wixobj
+set objs=%objs% obj\%target%Files.wixobj
+goto :eof
+

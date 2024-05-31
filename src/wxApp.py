@@ -6,3 +6,6 @@ def wxGetApp():
 def wxSetApp(app):
     global g_app
     g_app = app
+
+def wxResizePanelToContent(panel):
+    panel.GetSizer().SetSizeHints(panel)

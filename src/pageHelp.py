@@ -17,11 +17,13 @@ class pageHelp(formHelp):
     def saveModified(self,options):
         return wx.YES
 
+    # onDestroy is called before the page is removed
+    def onDestroy(self):
+        pass
 
     # StopWatch method is called by the mainFrame before destroying this page: no cancel possible anymore
     def stopWatch(self):
         return
-
 
     def m_htmlHelpOnHtmlLinkClicked(self,event):
         linkinfo = event.GetLinkInfo()

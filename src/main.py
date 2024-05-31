@@ -4,13 +4,28 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.1.15"
-__date__ = "2023-06-20"
-
-import wx
+__version__ = "0.2.20"
+__date__ = "2024-05-31"
 
 '''
 history
+2024-05-21: 19 Kees:
+    fixed exception when leaving the Help page
+2024-04-27: 18 Kees:
+    fixed bug that file name was not correctly parsed with a port and linear protocol
+    added 'Algorithm' and 'Readme' buttons
+    fixed bug that pageDetectorResult timer caused exception after page deletion by calling onDestroy()
+2024-01-08: 17 Kees:
+    fixed bug since v 16 that folder argument was not activating the correct folder
+    new features:
+      Detector page: 
+        added update of Start button for running analysis
+        inverted the gain
+2024-01-06: 16 Kees:
+    added page pageDetectorResults (requires NumPy, pyVips) and DetectorPhotonCalibration
+      DetectorPhotonCalibration calls the brightness-noise analysis tool 'cli_calibration_tool'
+      pageDetectorResults uses pyvips to show the TIFF images and LunaSVG to show the SVG image
+    in main.bat: define PYTHONPATH and local python folder to PATH
 2023-06-20: 15 Kees:
     Nikon macros version 18: included vc 2022 runtime libraries
 2023-06-04: 14 Kees:
@@ -43,27 +58,48 @@ history
 2022-05-06: 2 Kees: added minimal height for graphs, freeze/thaw and wait cursor during loading
 2022-05-05: 1 Kees: born
 
-install instructions: 
-unpack a portable python 3.9 distribution to folder 'python' (3.10 and 3.11 are incompatible with wxPython)
+build instructions:
+
+folder '~' is the ~QUAREP-LiMi-Toolkit folder where main.py resides
+
+VIPS
+Download vips-dev-w64-all-8.15.1.zip from https://github.com/libvips/libvips/releases
+and unpack the bin folder to the ~/vips folder 
+
+LUNASVG
+Download LunaSVG 2.3.9 source code from https://github.com/sammycage/lunasvg/releases.
+Compile ~\lunasvg\svg2png.cpp to a lunasvg.dll with the _WINEXE symbol undefined and
+copy the .dll to the ~/lunasvg folder
+
+CALIBRATION TOOL
+Download the calibration tool from https://github.com/mcfaddendavid/betalight-calibration/releases
+and unpack it to the ~/caltool folder. Run the tool with the --help argument and save the argument
+descriptios in ~/caltool/cli_calibration_tool_help.txt
+
+PYTHON
+unpack a portable python 3.9 distribution to folder 'python' (3.10 and 3.11 were incompatible with wxPython)
 in python39._pth, add a line with '..' below '.' and remove the # in front of import site
 download get-pip.py
 python\python get-pip.py
-python\scripts\pip install pywin32 wxwidgets wxmplot
+python\scripts\pip install pywin32 wxwidgets wxmplot pyvips
 python\scripts\pip list
 Package             Version
 ------------------- -------
-contourpy           1.0.7
+cffi                1.16.0
+contourpy           1.1.0
 cycler              0.11.0
-fonttools           4.39.3
+fonttools           4.40.0
 importlib-resources 5.12.0
 kiwisolver          1.4.4
 matplotlib          3.7.1
-numpy               1.24.2
-packaging           23.0
-Pillow              9.4.0
-pip                 23.0.1
-pyparsing           3.0.9
+numpy               1.25.0
+packaging           23.1
+Pillow              9.5.0
+pip                 23.3.2
+pycparser           2.21
+pyparsing           3.1.0
 python-dateutil     2.8.2
+pyvips              2.2.1
 pywin32             306
 PyYAML              6.0
 setuptools          67.6.1
@@ -71,7 +107,7 @@ six                 1.16.0
 webcolors           1.13
 wheel               0.40.0
 wxmplot             0.9.55
-wxPython            4.2.0
+wxPython            4.2.1
 wxutils             0.3.0
 wxwidgets           1.0.5
 zipp                3.15.0
@@ -80,8 +116,7 @@ run:
 python\pythonw main.py
 '''
 
-#import wx.lib.agw.persist as PM
-#from wxApp import wxSetApp, wxGetApp
+import wx
 from pageBrowse import *
 from pageMeasure import *
 from pageHelp import *
@@ -142,6 +177,7 @@ class MainFrame(mainFrame):
 
         if self.m_page != None:
             self.m_page.stopWatch()
+            self.m_page.onDestroy()
 
         self.m_page_id = page_id
 
@@ -204,6 +240,7 @@ class App(wx.App):
         self.config = wx.Config("QuaRepToolKit")
         self.iconFolder = os.path.join(os.path.dirname(__file__), "icons")
 
+        checkMacros()
         self.frame = MainFrame(None)
         self.SetTopWindow(self.frame)
         self.frame.Bind(wx.EVT_CLOSE, self.OnCloseMain)

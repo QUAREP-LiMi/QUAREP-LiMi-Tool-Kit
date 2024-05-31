@@ -22,6 +22,9 @@
 						<Directory Id="pythonDir" Name="python"/>
 						<Directory Id="iconsDir" Name="icons"/>
 						<Directory Id="macrosDir" Name="macros"/>
+						<Directory Id="vipsDir" Name="vips"/>
+						<Directory Id="lunasvgDir" Name="lunasvg"/>
+						<Directory Id="caltoolDir" Name="caltool"/>
 					</Directory>
 				</Directory>
 				<Directory Id="ProgramMenuFolder">
@@ -35,25 +38,31 @@
 			<File Id="main" Source="run.bat" KeyPath="yes">
 				<Shortcut Id="StartMenuShortcut" Name="QUAREP-LiMi Tool Kit" Description="QUAREP-LiMiTool Kit" Advertise="yes" Directory="QuaRepToolKitStartMenuFolder" WorkingDirectory="INSTALLFOLDER" Icon="Product.ico"/>
 			</File>
-			<File Id="mainpy" Source="main.py"/>
-			<File Id="formspy" Source="forms.py"/>
-			<File Id="pagebrowsepy" Source="pageBrowse.py"/>
-			<File Id="pagemeasurepy" Source="pageMeasure.py"/>
-			<File Id="pagelightsourceresultspy" Source="pageLightSourceResults.py"/>
-			<File Id="pagehelppy" Source="pageHelp.py"/>
-			<File Id="helphtml" Source="Help.html"/>
-			<File Id="folderwatchpy" Source="FolderWatch.py"/>
 			<File Id="commandpipepy" Source="CommandPipe.py"/>
-			<File Id="wxapppy" Source="wxApp.py"/>
+			<File Id="detectorphotoncalibrationpy" Source="DetectorPhotonCalibration.py"/>
+			<File Id="folderwatchpy" Source="FolderWatch.py"/>
+			<File Id="formspy" Source="forms.py"/>
+			<File Id="helphtml" Source="Help.html"/>
+			<File Id="mainpy" Source="main.py"/>
+			<File Id="pagebrowsepy" Source="pageBrowse.py"/>
+			<File Id="pagedetectorresultspy" Source="pageDetectorResults.py"/>
+			<File Id="pagehelppy" Source="pageHelp.py"/>
+			<File Id="pagelightsourceresultspy" Source="pageLightSourceResults.py"/>
+			<File Id="pagemeasurepy" Source="pageMeasure.py"/>
 			<File Id="ProductIco" Source="Product.ico"/>
+			<File Id="run_debugbat" Source="run_debug.bat"/>
+			<File Id="wxapppy" Source="wxApp.py"/>
 			<RemoveFolder Id="RemoveQuaRepDatabaseStartMenuFolder" Directory="QuaRepToolKitStartMenuFolder" On="uninstall"/>
 			<RemoveFolder Id="RemoveQuaRepProgramMenuFolder" Directory="QuaRepProgramMenuFolder" On="uninstall"/>
 		</Component>
 		<Feature Id="mainFeature">
 			<ComponentRef Id="mainComponent"/>
-			<ComponentGroupRef Id="cgPythonFiles"/>
-			<ComponentGroupRef Id="cgIconsFiles"/>
-			<ComponentGroupRef Id="cgMacrosFiles"/>
+			<ComponentGroupRef Id="cgpythonFiles"/>
+			<ComponentGroupRef Id="cgiconsFiles"/>
+			<ComponentGroupRef Id="cgmacrosFiles"/>
+			<ComponentGroupRef Id="cgvipsFiles"/>
+			<ComponentGroupRef Id="cglunasvgFiles"/>
+			<ComponentGroupRef Id="cgcaltoolFiles"/>
 		</Feature>
 	</Product>
 </Wix>

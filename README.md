@@ -28,7 +28,7 @@ Start the script from the start menu (All Programs | QUAREP | QUAREP-LiMi Tool K
 On the 'Measure' page, select your microscope brand.\
 When 'Nikon' is selected, you will be prompted to install the Nikon macros (including the Thorlabs power meter driver):
 
-![QLTK_measure](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/7058b946-c6f4-4942-8b5a-5566d2b9ddb8)
+![image](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/069e208c-423d-4d26-999f-f40ae0507597)
 
 To start the illumination power linearity and stability measurements macro, press the big button with the lamp.
 

@@ -6,13 +6,13 @@ from forms import *
 from wxApp import *
 
 def installNikonMacros():
-    command = os.path.join(os.path.dirname(__file__), "macros\\NikonQuarepMacros27.exe")
+    command = os.path.join(os.path.dirname(__file__), "macros\\NikonQuarepMacros28.exe")
     shell.ShellExecuteEx(lpVerb='runas', lpFile=command)
-    wxGetApp().config.Write("NikonMacroVersion", "27")
+    wxGetApp().config.Write("NikonMacroVersion", "28")
 
 def checkMacros():
     brand = wxGetApp().config.Read("brand")
-    if (brand == "Nikon") and (wxGetApp().config.Read("NikonMacroVersion") != "27"):
+    if (brand == "Nikon") and (wxGetApp().config.Read("NikonMacroVersion") != "28"):
         installNikonMacros()
 
 

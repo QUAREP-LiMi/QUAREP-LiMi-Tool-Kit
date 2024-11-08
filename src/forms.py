@@ -70,12 +70,30 @@ class formBrowse ( wx.Panel ):
 		self.m_leftPanel = wx.Panel( self.m_mainSplitter, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		m_leftSizer = wx.BoxSizer( wx.VERTICAL )
 
-		self.m_folder = wx.DirPickerCtrl( self.m_leftPanel, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.DefaultSize, wx.DIRP_DEFAULT_STYLE )
-		m_leftSizer.Add( self.m_folder, 0, wx.ALL|wx.EXPAND, 5 )
+		self.m_panel6 = wx.Panel( self.m_leftPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+		bSizer20 = wx.BoxSizer( wx.VERTICAL )
 
-		self.m_treeDevices = wx.dataview.TreeListCtrl( self.m_leftPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_SINGLE )
+		bSizer17 = wx.BoxSizer( wx.HORIZONTAL )
 
-		m_leftSizer.Add( self.m_treeDevices, 1, wx.EXPAND |wx.ALL, 5 )
+		self.m_folder = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_folder.Wrap( -1 )
+
+		bSizer17.Add( self.m_folder, 1, wx.ALL, 5 )
+
+		self.m_browse = wx.Button( self.m_panel6, wx.ID_ANY, u"...", wx.DefaultPosition, wx.Size( 40,20 ), 0 )
+		bSizer17.Add( self.m_browse, 0, wx.RIGHT|wx.TOP, 2 )
+
+
+		bSizer20.Add( bSizer17, 0, wx.EXPAND, 5 )
+
+		self.m_treeDevices = wx.TreeCtrl( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.TR_LINES_AT_ROOT|wx.TR_NO_LINES|wx.TR_SINGLE|wx.TR_TWIST_BUTTONS|wx.BORDER_NONE )
+		bSizer20.Add( self.m_treeDevices, 1, wx.BOTTOM|wx.EXPAND|wx.LEFT|wx.RIGHT, 5 )
+
+
+		self.m_panel6.SetSizer( bSizer20 )
+		self.m_panel6.Layout()
+		bSizer20.Fit( self.m_panel6 )
+		m_leftSizer.Add( self.m_panel6, 1, wx.ALL|wx.EXPAND, 5 )
 
 		self.m_treeDates = wx.dataview.TreeListCtrl( self.m_leftPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE )
 
@@ -93,8 +111,8 @@ class formBrowse ( wx.Panel ):
 		self.Layout()
 
 		# Connect Events
-		self.m_folder.Bind( wx.EVT_DIRPICKER_CHANGED, self.m_folderOnDirChanged )
-		self.m_treeDevices.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.m_treeDevicesOnTreelistSelectionChanged )
+		self.m_browse.Bind( wx.EVT_BUTTON, self.m_browseOnButtonClick )
+		self.m_treeDevices.Bind( wx.EVT_TREE_SEL_CHANGED, self.m_treeDevicesOnTreeSelChanged )
 		self.m_treeDates.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.m_treeDatesOnTreelistSelectionChanged )
 
 	def __del__( self ):
@@ -102,10 +120,10 @@ class formBrowse ( wx.Panel ):
 
 
 	# Virtual event handlers, override them in your derived class
-	def m_folderOnDirChanged( self, event ):
+	def m_browseOnButtonClick( self, event ):
 		event.Skip()
 
-	def m_treeDevicesOnTreelistSelectionChanged( self, event ):
+	def m_treeDevicesOnTreeSelChanged( self, event ):
 		event.Skip()
 
 	def m_treeDatesOnTreelistSelectionChanged( self, event ):
@@ -481,5 +499,29 @@ class formDetectorPhotonCalibration ( wx.Dialog ):
 	# Virtual event handlers, override them in your derived class
 	def m_btnOKOnButtonClick( self, event ):
 		event.Skip()
+
+
+###########################################################################
+## Class panelNone
+###########################################################################
+
+class panelNone ( wx.Panel ):
+
+	def __init__( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL, name = wx.EmptyString ):
+		wx.Panel.__init__ ( self, parent, id = id, pos = pos, size = size, style = style, name = name )
+
+		bSizer18 = wx.BoxSizer( wx.VERTICAL )
+
+		self.m_text = wx.StaticText( self, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_text.Wrap( -1 )
+
+		bSizer18.Add( self.m_text, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer18 )
+		self.Layout()
+
+	def __del__( self ):
+		pass
 
 

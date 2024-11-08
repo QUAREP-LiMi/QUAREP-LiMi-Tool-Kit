@@ -228,19 +228,28 @@ class DetPhoCalProcess:
 		self.handle = ctypes.windll.kernel32.OpenProcess(SYNCHRONIZE, False, self.proc.pid)
 
 	def close(self):
-		self.exit_code = self.proc.poll()
-		if self.exit_code is None:
-			self.exit_code = os.waitpid(self.pid, 0)[1]
-		out_err = self.proc.communicate()
-		self.output = out_err[0].decode("utf-8")
-		self.errors = out_err[1].decode("utf-8")
+		self.exit_code = -1
+		self.output = ""
+		self.errors = ""
+		try:
+			self.exit_code = self.proc.poll()
+			if self.exit_code is None:
+					self.exit_code = os.waitpid(self.pid, 0)[1]
+			out_err = self.proc.communicate()
+			self.output = out_err[0].decode("utf-8")
+			self.errors = out_err[1].decode("utf-8")
+		except:
+			pass
 		self.handle = -1
 		self.proc = None
 		self.pid = -1
 		self.save()
 
 	def save(self):
-		f = open(os.path.join(self.folder,"out.txt"), "w")
+		try:
+			f = open(os.path.join(self.folder,"out.txt"), "w")
+		except:
+			return
 		f.write(self.cmd + "\n")
 		f.write(self.output)
 		f.write(self.errors)

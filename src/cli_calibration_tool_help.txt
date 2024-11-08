@@ -1,0 +1,26 @@
+  --skip-first=INT
+  --xchunks=INT                  (default: 1)
+  --ychunks=INT                  (default: 1)
+  --num-bins=INT                Number of bins for the histogram (default: 100)
+  --hist-range=STR              If provided, the histogram will only be generated over this range.
+  --valid-range=STR             If provided, the gain fit will only be performed over this range of mean values.
+  --linearity-range=STR         If provided, the linearity will only be evaluated over this range.
+  --camera-name=STR             If provided, sets a plot title with CameraName
+  --correct-brightness=BOOL     Attempt to correct the calibration for a fluctuating illumination brightness. (default:
+                                True)
+  --correct-offset-drift=BOOL    (default: True)
+  --exclude-hot-cold-pixels=BOOL
+                                Exclude hot and cold pixels from the fit (default: True)
+  --noisy-pixel-percentile=FLOAT
+                                Only include this percentile of least noisy pixels.  Useful for supressing the effect of
+                                RTS noise. (default: 98)
+  --do-plot=BOOL                Plot the mean-variance curves (default: True)
+  --exportpath=PATH             If provided, the plots will be saved to this directory. (default: ./results)
+  --export-format=STR           PNG or SVG files possible. (default: png)
+  --brightness-blurring=BOOL    A filter to blur the brightness estimate. Useful for sCMOS sensors (default: True)
+  --plot-with-bg-offset=BOOL    If false, then the background value will be subtracted from the pixel ADUs in the plot.
+                                (default: True)
+  --plot-hist                   If true, then a histogram of brightness bins will be plotted in the plot background
+  --check-bg                    If true, then the background images will be checked.
+  --saturation-image            If true, then the peak of the photon transfer curve will be used to estimate the
+                                saturation level and calculate a dynamic range.

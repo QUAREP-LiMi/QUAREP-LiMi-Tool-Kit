@@ -4,11 +4,17 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.2.20"
-__date__ = "2024-05-31"
+__version__ = "0.2.21"
+__date__ = "2024-11-07"
 
-'''
+r'''
 history
+2024-11-07: 21 Kees:
+    changed strategy watched folder: subfolders 'Light Sources' and 'Detectors' are not created anymore
+    fixed bugs in synchronizing the devices tree with the subfolders in the watched folder
+    added 'no page' for when no device is selected
+    'Algorithm' and 'Readme' buttons handler now starts executable with 'show' argument 1 
+    detector auto analysis now waits until writing bright and dark images has completed and persists 
 2024-05-21: 19 Kees:
     fixed exception when leaving the Help page
 2024-04-27: 18 Kees:

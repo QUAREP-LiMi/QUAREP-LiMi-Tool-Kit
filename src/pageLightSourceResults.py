@@ -472,7 +472,6 @@ class pageLightSourceResults(panelTwoPanes):
         if last_date is not None:
             tree.Select(last_date)
         self.onSelectDate(last_date)
-        self.m_parent.StartWatch(self.deviceFolder)
 
     def m_treeDatesOnTreelistSelectionChanged(self, event):
         if event != None:
@@ -523,14 +522,9 @@ class pageLightSourceResults(panelTwoPanes):
     def onSelectDate(self, ti):
         self.saveModified(wx.YES_NO)
         tree = self.m_parent.m_treeDates
-        if ti is None:
-            return
-        if not ti.IsOk():
-            if self.dateTi != None and self.dateTi.IsOk():
-                tree.Select(self.dateTi)
-            return
         self.dateTi = ti
 
+        wait = wx.BusyCursor()
         self.Freeze()
         panel = self.m_rightMainPanel
         panel.DestroyChildren()
@@ -547,7 +541,6 @@ class pageLightSourceResults(panelTwoPanes):
         self.filterPower = {}
         panel.GetParent().Layout()
 
-        wait = wx.BusyCursor()
 
         # button = wx.Button( self.m_buttonPanel, wx.ID_ANY, u"Print")
         # button.Bind(wx.EVT_BUTTON, self.onPrint)
@@ -578,22 +571,23 @@ class pageLightSourceResults(panelTwoPanes):
         self.line_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.button_sizer.Add(self.line_sizer, 0, 0, 0)
 
-        name = tree.GetItemText(ti)
-        item_data = tree.GetItemData(ti)
-        path = Path(item_data['folder'])
-        self.deviceDate = item_data['date']
-        self.widgets = {}
-        for file in path.glob(item_data['date'] + "*.txt"):
-            if file.name.endswith("info.txt"):
-                border = 5
-                graph = TextFrame(panel, file.name, file)
-            else:
-                border = 0
+        if ti is not None:
+            name = tree.GetItemText(ti)
+            item_data = tree.GetItemData(ti)
+            path = Path(item_data['folder'])
+            self.deviceDate = item_data['date']
+            self.widgets = {}
+            for file in path.glob(item_data['date'] + "*.txt"):
+                if file.name.endswith("info.txt"):
+                    border = 5
+                    graph = TextFrame(panel, file.name, file)
+                else:
+                    border = 0
+                    graph = GraphFrame(panel, file.name, file)
+                self.addWidget(file.name, graph, border)
+            for file in path.glob(item_data['date'] + "*.csv"):
                 graph = GraphFrame(panel, file.name, file)
-            self.addWidget(file.name, graph, border)
-        for file in path.glob(item_data['date'] + "*.csv"):
-            graph = GraphFrame(panel, file.name, file)
-            self.addWidget(file.name, graph, 0)
+                self.addWidget(file.name, graph, 0)
 
         panel.GetParent().Layout()
         self.Thaw()
@@ -609,60 +603,54 @@ class pageLightSourceResults(panelTwoPanes):
         self.onSelectDate(ti)
 
     def onDataFileChange(self, event):
-        if self.m_parent.dataFileWatch is None:
+        file = os.path.join(self.m_parent.folder, event.file)
+        if not file.startswith(self.deviceFolder):
             return
-        self.m_parent.dataFileWatch.rearm(event.action, event.file)
+        file = file[len(self.deviceFolder)+1:]
         panel = self.m_rightMainPanel
         sizer = panel.GetSizer()
         action = event.action
         if action == FolderWatch.Renamed:
-            if event.old_name in self.widgets:
-                widget = self.widgets[event.old_name]
+            old_name = os.path.join(self.m_parent.folder, event.old_name)[len(self.deviceFolder)+1:]
+            if old_name in self.widgets:
+                widget = self.widgets[old_name]
                 panel.RemoveChild(widget)
-                del self.widgets[event.old_name]
+                del self.widgets[old_name]
                 widget.Destroy()
                 action = FolderWatch.Created
                 # no return
         if action == FolderWatch.Deleted:
-            if event.file in self.widgets:
-                widget = self.widgets[event.file]
+            if file in self.widgets:
+                widget = self.widgets[file]
                 panel.RemoveChild(widget)
-                del self.widgets[event.file]
+                del self.widgets[file]
                 widget.Destroy()
                 panel.GetParent().Layout()
                 return
         if action == FolderWatch.Created:
-            if event.file.startswith(self.deviceDate) and (event.file.endswith(".txt") or event.file.endswith(".csv")):
+            if file.startswith(self.deviceDate) and (file.endswith(".txt") or file.endswith(".csv")):
                 self.Freeze()
                 border = 5
-                if event.file.endswith("info.txt"):
-                    widget = TextFrame(panel, event.file, os.path.join(event.source.folder, event.file))
+                if file.endswith("info.txt"):
+                    widget = TextFrame(panel, file, os.path.join(self.deviceFolder, file))
                     border = 0
                 else:
-                    widget = GraphFrame(panel, event.file, os.path.join(event.source.folder, event.file))
-                self.addWidget(event.file, widget, border)
+                    widget = GraphFrame(panel, file, os.path.join(self.deviceFolder, file))
+                self.addWidget(file, widget, border)
                 panel.GetParent().Layout()
                 panel.Scroll(-1, panel.GetClientSize()[1])
                 self.Thaw()
                 return
             else:
-                date = re.search(r"^\d\d\d\d\d\d\d\d-\d\d\d\d", event.file)
+                date = re.search(r"^\d\d\d\d\d\d\d\d-\d\d\d\d", file)
                 if date is not None:
                     date = date.group()
                     if date not in self.dates:
                         self.AddDate(date)
         if action == FolderWatch.Updated:
-            if event.file in self.widgets:
-                self.widgets[event.file].Draw()
+            if file in self.widgets:
+                self.widgets[file].Draw()
                 return
-
-    def onDeviceFolderChange(self, event):
-        if self.m_parent.deviceFolderWatch is None:
-            return
-        # print(FolderWatch.ActionName(event.action) + ": " + event.file + "\n")
-        action = event.action
-        if action != FolderWatch.Thread:
-            self.m_parent.populateTrees()
 
     def onFilterToggle(self, event):
         self.Freeze()

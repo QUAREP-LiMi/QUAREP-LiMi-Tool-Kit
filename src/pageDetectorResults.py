@@ -15,6 +15,7 @@ import wx.lib.agw.persist as PM
 import wx.grid
 import wxmplot
 import matplotlib.pyplot as mpl;
+import subprocess
 
 from FolderWatch import *  # requires pyWin32
 from forms import *
@@ -58,6 +59,12 @@ lunasvg_tmppng = os.path.join(lunasvg_tmpdir.name,"tmp.png")
 def loadSvg(svg, width, height, backgroundcolor):
     lunasvg.svg2png(svg,width,height,backgroundcolor,lunasvg_tmppng)
     return wx.Bitmap(lunasvg_tmppng, wx.BITMAP_TYPE_ANY)
+
+def dictToTooltip(dict):
+    text = ""
+    for key in dict.keys():
+        text += key + "\t" + dict[key] + "\n"
+    return text
 
 class SvgImage(wx.StaticBitmap):
     def __init__( self, parent, id = wx.ID_ANY, svg_filename = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style=0, name = wx.StaticBitmapNameStr ):
@@ -235,6 +242,7 @@ class panelDetectorResults ( wx.Panel ):
     def __init__( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL, name = wx.EmptyString ):
         wx.Panel.__init__ ( self, parent, id = id, pos = pos, size = size, style = style, name = name )
         self.m_folder = ""
+        self.m_autoProcess = wxGetApp().config.ReadInt("detectorAutoProcess", 1)
 
         rightSizer = wx.BoxSizer( wx.VERTICAL )
 
@@ -317,10 +325,10 @@ class pageDetectorResults(panelDetectorResults):
         wxGetApp().config.Write("detectorFilterStates",tmp)
 
     def m_toolAlgorithmClicked(self,event):
-        win32api.ShellExecute(0, "open", os.path.join(os.path.dirname(__file__), r"caltool\Algorithm.pdf"), None, ".", 0)
+        win32api.ShellExecute(0, "open", os.path.join(os.path.dirname(__file__), r"caltool\Algorithm.pdf"), None, ".", 1)
 
     def m_toolReadmeClicked(self,event):
-        win32api.ShellExecute(0, "open", os.path.join(os.path.dirname(__file__), r"caltool\readme.txt"), None, ".", 0)
+        win32api.ShellExecute(0, "open", os.path.join(os.path.dirname(__file__), r"caltool\readme.txt"), None, ".", 1)
 
     def SetWidgetScale(self, scale):
         try:
@@ -355,8 +363,9 @@ class pageDetectorResults(panelDetectorResults):
             self.autoProcess(widget)
 
     def m_toolAutoProcessClicked(self,event):
-        none
-        
+        self.m_autoProcess = self.m_btnAuto.GetValue()
+        wxGetApp().config.WriteInt("detectorAutoProcess", self.m_autoProcess)
+
     def SetFilterCategory(self, filter, graph):
         if filter not in self.filterState.keys():
             self.filterState[filter] = 1
@@ -417,7 +426,6 @@ class pageDetectorResults(panelDetectorResults):
         if last_date is not None:
             tree.Select(last_date)
         self.onSelectDate(last_date)
-        self.m_parent.StartWatch(self.deviceFolder)
 
     def m_treeDatesOnTreelistSelectionChanged(self, event):
         if event != None:
@@ -429,14 +437,8 @@ class pageDetectorResults(panelDetectorResults):
     def onSelectDate(self, ti):
         self.saveModified(wx.YES_NO)
         tree = self.m_parent.m_treeDates
-        if ti is None:
-            return
-        if not ti.IsOk():
-            if self.dateTi != None and self.dateTi.IsOk():
-                tree.Select(self.dateTi)
-            return
-        self.dateTi = ti
 
+        wait = wx.BusyCursor()
         self.Freeze()
         panel = self.m_rightMainPanel
         panel.DestroyChildren()
@@ -450,7 +452,8 @@ class pageDetectorResults(panelDetectorResults):
         self.filters = {}
         panel.GetParent().Layout()
 
-        wait = wx.BusyCursor()
+        self.dateTi = ti
+
         # button = wx.Button( self.m_buttonPanel, wx.ID_ANY, u"Print")
         # button.Bind(wx.EVT_BUTTON, self.onPrint)
         # button_sizer.Add(button, 0, wx.ALL, 5)
@@ -488,20 +491,20 @@ class pageDetectorResults(panelDetectorResults):
         button.Bind(wx.EVT_BUTTON, self.m_toolProcessAllClicked)
         button = wx.CheckBox(self.m_buttonPanel, wx.ID_ANY, "Auto Process", wx.DefaultPosition, button_size)
         button.SetToolTip("Automatically process new data")
-        button.SetValue(1)
+        button.SetValue(self.m_autoProcess)
         self.zoom_sizer.Add(button, 0, wx.ALL, 5)
-        button.Bind(wx.EVT_BUTTON, self.m_toolAutoProcessClicked)
+        button.Bind(wx.EVT_CHECKBOX, self.m_toolAutoProcessClicked)
         self.m_btnAuto = button
         
-        name = tree.GetItemText(ti)
-        item_data = tree.GetItemData(ti)
-        self.m_folder = Path(item_data['folder'])
-        self.deviceDate = item_data['date']
-
-        for o in os.listdir(self.m_folder):
-            folder = os.path.join(self.m_folder, o)
-            if o.startswith(self.deviceDate) and os.path.isdir(folder):
-                self.AddWidget(folder, o)
+        if ti is not None:
+            name = tree.GetItemText(ti)
+            item_data = tree.GetItemData(ti)
+            self.m_folder = Path(item_data['folder'])
+            self.deviceDate = item_data['date']
+            for o in os.listdir(self.m_folder):
+                folder = os.path.join(self.m_folder, o)
+                if o.startswith(self.deviceDate) and os.path.isdir(folder):
+                    self.AddWidget(folder, o)
 
         panel.GetParent().Layout()
 
@@ -557,15 +560,35 @@ class pageDetectorResults(panelDetectorResults):
 
     def UpdateWidget(self,widget):
         widget.m_info = {}
-        path = os.path.join(widget.m_folder, "info.txt")
-        if os.path.exists(path):
-            widget.m_info = ReadInfo(path)
+        infopath = os.path.join(widget.m_folder, "info.txt")
+        brightpath = os.path.join(widget.m_folder, "bright.tif")
+        if not os.path.isfile(brightpath):
+            brightpath = os.path.join(widget.m_folder, "bright.ome.tif")
+        # use nd2info to create info.txt
+        if not os.path.isfile(infopath) and os.path.isfile(brightpath):
+            nd2info = os.path.join(os.path.dirname(__file__), r"NkNd2Info\NkNd2Info.exe")
+            if os.path.isfile(nd2info):
+                args = [nd2info, 'textinfo', brightpath]
+                r = subprocess.run(args, capture_output=True)
+                info = r.stdout.decode("utf-8")
+                info = info.replace(r"\r\n", "\n")
+                info = info.replace(r"\r", "")
+                info = info.replace(r'"', "")
+                info = info.replace(r"{", "")
+                info = info.replace(r"}", "")
+                info = info.replace(r"\t", "\t")
+                info = info.replace("\tPMT Offset", "\nPMT Offset")
+                with open(infopath, 'w', encoding='utf-8') as file:
+                    file.write(info)
+        if os.path.exists(infopath):
+            widget.m_info = ReadInfo(infopath)
         widget.m_results = {}
         path = os.path.join(widget.m_folder, "calibration_results.txt")
         if os.path.exists(path):
             widget.m_results = ReadResults(path)
         widget.m_name.SetLabel(widget.name)
         self.SetInfoText(widget.m_conditions,widget.m_info,('Exposure','Mode','Dwell Time', 'Gain', 'PMT HV'),1)
+        widget.m_conditions.SetToolTip(dictToTooltip(widget.m_info))
         self.SetInfoText(widget.m_background,widget.m_results,('Background [ADU]',))
         gain = ""
         if 'Gain [e- / ADU]' in widget.m_results.keys():
@@ -592,7 +615,14 @@ class pageDetectorResults(panelDetectorResults):
         if os.path.isfile(path):
             widget.m_bright = os.path.basename(path)
         #print("UpdateWidget: " + widget.name + " '" + widget.m_bright + "' '" + widget.m_dark + "'")
-        widget.m_btnStart.Enable(len(widget.m_bright) and len(widget.m_dark))
+        path = os.path.join(widget.m_folder, "out.txt");
+        out_present = os.path.isfile(path)
+        if len(widget.m_bright) and len(widget.m_dark):
+            #widget.m_btnStart.Enable(1)
+            if out_present:
+                widget.delayedUpdate = 0
+            elif self.m_btnAuto.GetValue():
+                widget.delayedUpdate = 1
         if widget.m_btnExpand.GetValue():
             self.ExpandWidget(widget)
         self.SetStartButton(widget,g_detphocalProcesses.isRunning(widget.m_folder))
@@ -605,6 +635,17 @@ class pageDetectorResults(panelDetectorResults):
             widget.m_btnStart.SetLabel("Start")
 
     def StartAnalysis(self, widget, args):
+        dark = os.path.join(widget.m_folder, widget.m_dark)
+        bright = os.path.join(widget.m_folder, widget.m_bright)
+        if not os.path.isfile(dark) or not os.path.isfile(bright):
+            return
+        try:
+            f = open(dark, "r+")
+            f.close()
+            f = open(bright, "r+")
+            f.close()
+        except:
+            return
         widget.m_btnStart.SetLabel("Busy...")
         widget.m_btnStart.SetValue(1)
         widget.m_args = args
@@ -629,7 +670,10 @@ class pageDetectorResults(panelDetectorResults):
             proc = g_detphocalProcesses.checkAll()
             if not proc:
                 break
-            widget = self.widgets[os.path.basename(proc.folder)]
+            key = os.path.basename(proc.folder)
+            if not key in self.widgets.keys():
+                continue
+            widget = self.widgets[key]
             widget.m_btnStart.SetValue(False)
             widget.m_btnStart.SetLabel("Start")
             tt = widget.m_args
@@ -640,18 +684,32 @@ class pageDetectorResults(panelDetectorResults):
             widget.m_btnStart.SetToolTip(tt)
             self.UpdateWidget(widget)
         # check pending updates
+        frozen = 0
         for widget in self.widgets.values():
             if widget.delayedUpdate:
                 #print("onTimer: "  + widget.name + "" + str(widget.delayedUpdate))
+                if not frozen:
+                    frozen = 1
+                    self.Freeze()
                 self.UpdateWidget(widget)
                 if self.m_btnAuto.GetValue() and len(widget.m_dark) and len(widget.m_bright):
-                    widget.delayedUpdate = 0
+                    # check for exclusive access
+                    try:
+                        f = open(os.path.join(widget.m_folder,widget.m_dark), "r+")
+                        f.close()
+                        f = open(os.path.join(widget.m_folder,widget.m_bright), "r+")
+                        f.close()
+                    except:
+                        continue
                     self.autoProcess(widget)
-    
+        if frozen:
+            self.Thaw()
+
     def autoProcess(self,widget):
         if not widget.m_btnStart.GetValue() and not os.path.exists(os.path.join(widget.m_folder, "out.txt")):
             if g_detphocalAutoOptions.load(os.path.join(widget.m_folder,"caltool.txt")):
                 self.StartAnalysis(widget,g_detphocalAutoOptions.format())
+                widget.delayedUpdate = 0
 
     def m_btnExpandOnButtonClick(self, event):
         button = event.EventObject
@@ -687,27 +745,9 @@ class pageDetectorResults(panelDetectorResults):
                 bitmap = MultiPageTiffFrame(panel, widget.name, path)
                 sizer.Add(bitmap, 0, wx.ALL, 5)
                 self.SetFilterCategory("Bright", bitmap)
-            path = os.path.join(widget.m_folder, "info.txt");
-            # hack to create info.txt from nd2
-            if not os.path.isfile(path) and os.path.isfile(r'l:\bat\nd2info\nd2info.exe'):
-                nd2path = os.path.join(widget.m_folder,"bright.nd2")
-                if os.path.isfile(nd2path):
-                    os.system(r'l:\bat\nd2info\nd2info.exe textinfo "' + nd2path + '" >"' + path + '"')
-                    info = ""
-                    with open(path,"rt") as file:
-                        info = file.read()
-                    info = info.replace(r"\r\n","\n")
-                    info = info.replace(r"\r","")
-                    info = info.replace(r'"',"")
-                    info = info.replace(r"{","")
-                    info = info.replace(r"}","")
-                    info = info.replace(r"\t","\t")
-                    info = info.replace("\tPMT Offset","\nPMT Offset")
-                    with open(path,"wt") as file:
-                        file.write(info)
-            # hack
-            if os.path.isfile(path):
-                bitmap = TextFrame(panel, widget.name, path)
+            infopath = os.path.join(widget.m_folder, "info.txt");
+            if os.path.isfile(infopath):
+                bitmap = TextFrame(panel, widget.name, infopath)
                 sizer.Add(bitmap, 0, wx.ALL, 5)
                 self.SetFilterCategory("Info", bitmap)
             path = os.path.join(widget.m_folder, "calibration_results.txt");
@@ -746,8 +786,8 @@ class pageDetectorResults(panelDetectorResults):
         self.m_rightMainPanel.GetParent().Layout() # this makes the scrolled window show the scrollbars
 
     def DeleteWidget(self, widget):
+        self.widgets.pop(widget.name)
         widget.Destroy()
-        self.widgets.pop(widget)
         self.CheckLabels()
         wxResizePanelToContent(self.m_rightMainPanel) # the right panel must be resized to show all content
         self.m_rightMainPanel.GetParent().Layout() # this makes the scrolled window show the scrollbars
@@ -763,22 +803,25 @@ class pageDetectorResults(panelDetectorResults):
             item, cookie = tree.GetNextChild(root, cookie)
 
     def CheckDate(self, date):
-        if date not in self.dates:
-            return
-        # check if there is still a folder with this date prefix
-        for folder in os.listdir(self.m_folder):
-            if folder.startswith(date):
-                return
-        # remove the date
-        self.dates.remove(date)
-        ti = self.DeleteDateItem(date)
-        tree = self.m_parent.m_treeDates
-        item = tree.GetSelection()
-        if not item.IsOk():
-            item = tree.GetLastChild(tree.GetRootItem)
-            if item.IsOk():
-                tree.Select(item)
-            self.onSelectDate(item)
+        if date in self.dates:
+            # check if there is still a folder with this date prefix
+            for folder in os.listdir(self.m_folder):
+                if folder.startswith(date):
+                    return 0
+            # remove the date
+            self.dates.remove(date)
+            ti = self.DeleteDateItem(date)
+            tree = self.m_parent.m_treeDates
+            item = tree.GetSelection()
+            if not item.IsOk():
+                item = tree.GetLastChild(tree.GetRootItem)
+                if item.IsOk():
+                    tree.Select(item)
+                self.onSelectDate(item)
+            return 0
+        else:
+            self.AddDate(date)
+            return 1
 
     def CheckLabels(self):
         changed = False
@@ -799,81 +842,65 @@ class pageDetectorResults(panelDetectorResults):
         return changed
 
     def onDataFileChange(self, event):
-        if self.m_parent.dataFileWatch is None:
-            return
-        self.m_parent.dataFileWatch.rearm(event.action, event.file)
-        if event.file == "caltool.txt":
-            return
-        panel = self.m_rightMainPanel
-        sizer = panel.GetSizer()
         action = event.action
-        """
+        path = str(os.path.join(self.m_parent.folder, event.file))
+        if not path.startswith(str(self.m_folder)):
+            return
+        subpath = path[len(str(self.m_folder))+1:]
+        pathlist = subpath.split('\\')
+        if not len(pathlist) or pathlist[0] == '': # why does splitting an empty string yields a list with one empty element ?
+            return
+        file = pathlist[-1]
+        folder = pathlist[0]
+        folder_path = str(os.path.join(str(self.m_folder),folder))
+        widgetPresent = folder in self.widgets.keys()
+
+        # handle subfolder creation/rename/deletion
+        if len(pathlist) == 1:
+            #if action == FolderWatch.Deleted:
+            if not os.path.isdir(path):
+                if widgetPresent:
+                    self.DeleteWidget(self.widgets[folder])
+                    self.CheckLabels()
+                return
             if action == FolderWatch.Renamed:
-            if event.old_name in self.widgets:
-                widget = self.widgets[event.old_name]
-                panel.RemoveChild(widget)
-                del self.widgets[event.old_name]
-                widget.Destroy()
+                old_path = str(os.path.join(self.m_parent.folder, event.old_name))
+                old_subpath = old_path[len(str(self.m_folder))+1:]
+                old_folder = old_subpath.split("\\")[0]
+                if old_folder in self.widgets.keys():
+                    self.DeleteWidget(self.widgets[old_folder])
+                    self.CheckLabels()
                 action = FolderWatch.Created
                 # no return
-        if action == FolderWatch.Deleted:
-            if event.file in self.widgets:
-                widget = self.widgets[event.file]
-                panel.RemoveChild(widget)
-                del self.widgets[event.file]
-                widget.Destroy()
-                panel.GetParent().Layout()
-                return
-        if action == FolderWatch.Created:
-            if event.file.startswith(self.deviceDate) and (event.file.endswith(".txt") or event.file.endswith(".csv")):
-                self.Freeze()
-                border = 5
-                if event.file.endswith("info.txt"):
-                    widget = TextFrame(panel, event.file, os.path.join(event.source.folder, event.file))
-                    border = 0
-                else:
-                    widget = GraphFrame(panel, event.file, os.path.join(event.source.folder, event.file))
-                self.addWidget(event.file, widget, border)
-                panel.GetParent().Layout()
-                panel.Scroll(-1, panel.GetClientSize()[1])
-                self.Thaw()
-                return
-            else:
-                date = re.search(r"^\d\d\d\d\d\d\d\d", event.file)
-                if date is not None:
-                    date = date.group()
-                    if date not in self.dates:
-                        self.AddDate(date)
-        """
-        if action == FolderWatch.Updated:
-            # the FolderWatch update is generated when the content of a subfolder changes
-            path = os.path.join(self.m_folder,event.file)
-            if g_detphocalProcesses.isRunning(path):
-                return
-            widgetPresent = event.file in self.widgets.keys()
-            date = re.search(r"^\d\d\d\d\d\d\d\d", event.file)
-            self.Freeze()
-            if not os.path.isdir(path):
-                # the folder was deleted ?
-                if widgetPresent:
-                    self.DeleteWidget(self.widgets[event.file])
+            if action == FolderWatch.Created:
+                date = re.search(r"^\d\d\d\d\d\d\d\d", folder)
                 if date:
-                    self.CheckDate(date.group())
+                    if self.CheckDate(date.group()):
+                        return
+                    if not widgetPresent:
+                        self.AddWidget(folder_path, folder)
+                        self.CheckLabels()
+                        wxResizePanelToContent(self.m_rightMainPanel)  # the right panel must be resized to show all content
+                        self.m_rightMainPanel.GetParent().Layout()  # this makes the scrolled window show the scrollbars
                 return
-            if widgetPresent:
-                self.widgets[event.file].delayedUpdate = 1
-                #print( "FolderWatch.Updated: " + path)
-            elif date:
-                self.AddDate(date.group())
-            self.Thaw()
-
-    def onDeviceFolderChange(self, event):
-        if self.m_parent.deviceFolderWatch is None:
             return
-        # print(FolderWatch.ActionName(event.action) + ": " + event.file + "\n")
-        action = event.action
-        if action != FolderWatch.Thread:
-            self.m_parent.populateTrees()
+
+        # handle file creation/rename/deletion in subfolder
+        if len(pathlist) == 2:
+            if not widgetPresent:
+                return
+            if file == "caltool.txt" or file == "info.txt" or file == "out.txt":
+                return
+            if (action == FolderWatch.Updated) or (action == FolderWatch.Created):
+                if g_detphocalProcesses.isRunning(folder_path):
+                    return
+                if widgetPresent:
+                    self.widgets[folder].delayedUpdate = 1
+                    return
+                return
+            return
+
+        return
 
     # Virtual event handlers, override them in your derived class
     def panelDetectorResultsOnSize(self, event):

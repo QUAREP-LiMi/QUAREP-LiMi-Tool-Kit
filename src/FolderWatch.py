@@ -46,7 +46,7 @@ class FolderWatch(threading.Thread):
         self.handles =  self.overlapped.hEvent, self.stop_event
         self.handle = win32file.CreateFile (
             self.folder,
-            0x0001,  # FILE_LIST_DIRECTORY,
+            0x0080 | 0x0020 |  0x0008 | 0x0001,  # FILE_READ_ATTRIBUTES | FILE_TRAVERSE | FILE_READ_EA | FILE_LIST_DIRECTORY,
             win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
             None,
             win32con.OPEN_EXISTING,
@@ -57,7 +57,8 @@ class FolderWatch(threading.Thread):
             self.start()
 
     def __del__(self):
-        self.abort()
+        if self._started.is_set():
+            self.abort()
 
     def GetId(self):
         return self.id

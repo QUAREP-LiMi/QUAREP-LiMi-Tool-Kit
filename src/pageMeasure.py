@@ -5,16 +5,30 @@ import wx
 from forms import *
 from wxApp import *
 
-def installNikonMacros():
-    command = os.path.join(os.path.dirname(__file__), "macros\\NikonQuarepMacros28.exe")
+ZeissMacroName = "LPM-Zen_Blue.exe"
+ZeissMacroTitle = "Zeiss Zen Blue macros"
+ZeissMacroVersion = "1"
+
+NikonMacroName = "NikonQuarepMacros28.exe"
+NikonMacroTitle = "Nikon NIS-Elements macros"
+NikonMacroVersion = "28"
+
+def installZeissMacros():
+    command = os.path.join(os.path.dirname(__file__), "macros\\" + ZeissMacroName)
     shell.ShellExecuteEx(lpVerb='runas', lpFile=command)
-    wxGetApp().config.Write("NikonMacroVersion", "28")
+    wxGetApp().config.Write("ZeissMacroVersion", ZeissMacroVersion)
+
+def installNikonMacros():
+    command = os.path.join(os.path.dirname(__file__), "macros\\" + NikonMacroName)
+    shell.ShellExecuteEx(lpVerb='runas', lpFile=command)
+    wxGetApp().config.Write("NikonMacroVersion", NikonMacroVersion)
 
 def checkMacros():
     brand = wxGetApp().config.Read("brand")
-    if (brand == "Nikon") and (wxGetApp().config.Read("NikonMacroVersion") != "28"):
+    if (brand == "Nikon") and (wxGetApp().config.Read("NikonMacroVersion") != NikonMacroVersion):
         installNikonMacros()
-
+    if (brand == "Zeiss") and (wxGetApp().config.Read("ZeissMacroVersion") != ZeissMacroVersion):
+        installZeissMacros()
 
 class pageMeasure(formMeasure):
 
@@ -45,8 +59,11 @@ class pageMeasure(formMeasure):
         index = self.m_brandChoice.GetCurrentSelection()
         brand = self.m_brandChoice.GetString(index)
         if brand == "Nikon":
-            if wx.MessageDialog(self, "install Nikon macros ?", wx.MessageBoxCaptionStr, wx.YES_NO).ShowModal() == wx.ID_YES:
+            if wx.MessageDialog(self, "install " + NikonMacroTitle +" ?", wx.MessageBoxCaptionStr, wx.YES_NO).ShowModal() == wx.ID_YES:
                 installNikonMacros()
+        if brand == "Zeiss":
+            if wx.MessageDialog(self, "install " + ZeissMacroTitle + "  ?", wx.MessageBoxCaptionStr, wx.YES_NO).ShowModal() == wx.ID_YES:
+                installZeissMacros()
         wxGetApp().config.Write("brand",brand)
         self.brand = brand
         self.brand_index = index
@@ -73,9 +90,9 @@ class pageMeasure(formMeasure):
             sizer.Add(self.m_eyeButton, 0, wx.ALL, 5)
             self.m_eyeButton.Bind(wx.EVT_BUTTON, self.m_eyeButtonOnButtonClick)
         elif brand == "Zeiss":
-            sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,"download Zeiss Zen scripts from https://github.com/QUAREP-LiMi/WG1-Automation/tree/main/Microscope_Systems."), 0, wx.ALL, 5)
+            sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,r"Run the QUAREP-LPM script in C:\Users\Public\Documents\Carl Zeiss\ZEN\Documents\Macros"), 0, wx.ALL, 5)
         else:
-            sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,"no scripts/macros available yet - work in process ..."), 0, wx.ALL, 5)
+            sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,r"no scripts/macros available yet - work in process ..."), 0, wx.ALL, 5)
         self.Layout()
 
 

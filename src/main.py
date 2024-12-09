@@ -4,11 +4,15 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.2.21"
-__date__ = "2024-11-07"
+__version__ = "0.2.22"
+__date__ = "2024-12-09"
 
 r'''
 history
+2024-12-09: 22:
+    Kees: moved ini file from user data folder to system data folder
+    Nasser: added ZenBlue scripts version 1
+    Arne: changed argument to setlocale from 'en_US' to 'C': make sure decimal symbol is set to '.' !
 2024-11-07: 21 Kees:
     changed strategy watched folder: subfolders 'Light Sources' and 'Detectors' are not created anymore
     fixed bugs in synchronizing the devices tree with the subfolders in the watched folder
@@ -131,6 +135,13 @@ from pageHelp import *
 from CommandPipe import *
 QuaRepLiMiPipeName = 'QUAREP-LiMi-ToolKit-Pipe'
 
+def checkDir(path):
+    if os.path.exists(path):
+        return
+    head, tail = os.path.split(path)
+    checkDir(head)
+    os.mkdir(path)
+
 class MainFrame(mainFrame):
 
     def __init__(self, parent):
@@ -230,7 +241,7 @@ class App(wx.App):
         wxSetApp(self)
 
         # fix for datetime.strptime exception 'unknown locale'
-        locale.setlocale(locale.LC_ALL, 'en_US')
+        locale.setlocale(locale.LC_ALL, 'C')
 
         # process command line arguments
         self.pipe = CommandPipe(QuaRepLiMiPipeName)
@@ -241,7 +252,12 @@ class App(wx.App):
                 return False
 
         self._persistMgr = PM.PersistenceManager.Get()
-        _configFile = wx.StandardPaths.Get().GetUserDataDir() + "\\QuaRep\\QuaRepDataBrowser\\QuaRepDataBrowser.ini"
+        checkDir(os.environ['ProgramData'] + "\\QuaRep\\QuaRepDataBrowser")
+        _configFile = os.environ['ProgramData'] + "\\QuaRep\\QuaRepToolKit\\QuaRepToolKit.ini"
+        if not os.path.exists(_configFile):
+            _oldConfigFile = wx.StandardPaths.Get().GetUserDataDir() + "\\QuaRep\\QuaRepDataBrowser\\QuaRepDataBrowser.ini"
+            if os.path.exists(_oldConfigFile):
+                shutil.copy(_oldConfigFile,_configFile)
         self._persistMgr.SetPersistenceFile(_configFile)
         self.config = wx.Config("QuaRepToolKit")
         self.iconFolder = os.path.join(os.path.dirname(__file__), "icons")

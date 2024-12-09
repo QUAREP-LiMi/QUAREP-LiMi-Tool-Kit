@@ -2,6 +2,7 @@ import os
 import subprocess, shlex
 import win32com.shell.shell as shell
 import wx
+import glob
 from forms import *
 from wxApp import *
 
@@ -90,7 +91,11 @@ class pageMeasure(formMeasure):
             sizer.Add(self.m_eyeButton, 0, wx.ALL, 5)
             self.m_eyeButton.Bind(wx.EVT_BUTTON, self.m_eyeButtonOnButtonClick)
         elif brand == "Zeiss":
-            sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,r"Run the QUAREP-LPM script in C:\Users\Public\Documents\Carl Zeiss\ZEN\Documents\Macros"), 0, wx.ALL, 5)
+            scripts = glob.glob(r"C:\Users\Public\Documents\Carl Zeiss\ZEN\Documents\Macros\QUAREP-LPM*.py")
+            if len(scripts):
+                sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,r"Run the QUAREP-LPM script in C:\Users\Public\Documents\Carl Zeiss\ZEN\Documents\Macros"), 0, wx.ALL, 5)
+            else:
+                sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,r"Install the " + ZeissMacroTitle + r" from " + os.path.join(os.path.dirname(__file__), "Macros") + r" or check https://github.com/QUAREP-LiMi for other scripts."), 0, wx.ALL, 5)
         else:
             sizer.Add(wx.StaticText(self.m_mainPanel, wx.ID_ANY,r"no scripts/macros available yet - work in process ..."), 0, wx.ALL, 5)
         self.Layout()

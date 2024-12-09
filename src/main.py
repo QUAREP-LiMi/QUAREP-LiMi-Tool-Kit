@@ -252,7 +252,7 @@ class App(wx.App):
                 return False
 
         self._persistMgr = PM.PersistenceManager.Get()
-        checkDir(os.environ['ProgramData'] + "\\QuaRep\\QuaRepDataBrowser")
+        checkDir(os.environ['ProgramData'] + "\\QuaRep\\QuaRepToolkit")
         _configFile = os.environ['ProgramData'] + "\\QuaRep\\QuaRepToolKit\\QuaRepToolKit.ini"
         if not os.path.exists(_configFile):
             _oldConfigFile = wx.StandardPaths.Get().GetUserDataDir() + "\\QuaRep\\QuaRepDataBrowser\\QuaRepDataBrowser.ini"

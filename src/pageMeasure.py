@@ -10,9 +10,9 @@ ZeissMacroName = "LPM-Zen_Blue.exe"
 ZeissMacroTitle = "Zeiss Zen Blue macros"
 ZeissMacroVersion = "1"
 
-NikonMacroName = "NikonQuarepMacros28.exe"
+NikonMacroName = "NikonQuarepMacros30.exe"
 NikonMacroTitle = "Nikon NIS-Elements macros"
-NikonMacroVersion = "28"
+NikonMacroVersion = "30"
 
 def installZeissMacros():
     command = os.path.join(os.path.dirname(__file__), "macros\\" + ZeissMacroName)
@@ -53,8 +53,16 @@ class pageMeasure(formMeasure):
     def stopWatch(self):
         return
 
+    # Virtual event handlers, override them in your derived class
+    def m_buttonSmartLPMOnButtonClick(self, event):
+        folder = os.path.dirname(__file__)
+        args = [os.path.join(folder, "python\\pythonw.exe"),os.path.join(folder, "SmartLPM\\SmartLPM.py")]
+        subprocess.Popen(args)
 
-    # Virtual event handlers defined in forms.py, override them here
+    def m_buttonSmartLPMmanualOnButtonClick(self, event):
+        pdf = os.path.join(os.path.dirname(__file__), "SmartLPM\\SmartLPM_manual.pdf")
+        shell.ShellExecuteEx(lpVerb='open', lpFile=pdf)
+
     def m_brandChoiceOnChoice(self, event):
         #event.Skip()
         index = self.m_brandChoice.GetCurrentSelection()
@@ -69,7 +77,6 @@ class pageMeasure(formMeasure):
         self.brand = brand
         self.brand_index = index
         self.setBrand(index)
-
 
     def setBrand(self, index):
         panel = self.m_mainPanel

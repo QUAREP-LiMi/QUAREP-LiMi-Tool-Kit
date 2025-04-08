@@ -4,11 +4,19 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.2.22"
-__date__ = "2024-12-09"
+__version__ = "0.2.24"
+__date__ = "2025-04-08"
 
 r'''
 history
+2025-04-08: 24: Kees
+    added the SmartLPM code from Nasser (+ buttons on the Measure page), required QT module PySide6
+2025-03-28: 23: Kees
+    fixed temp file problem in creating info.exe with NkNd2Info
+    power linearity fit excludes 0 point, chi-square weight is made absolute to avoid negative results
+    detector results reads info.txt in both utf-8 an utf-16-le formats
+    fixed endless open selecting data folder
+    added NikonQuarepMacros version 30
 2024-12-09: 22:
     Kees: moved ini file from user data folder to system data folder
     Nasser: added ZenBlue scripts version 1
@@ -91,7 +99,7 @@ unpack a portable python 3.9 distribution to folder 'python' (3.10 and 3.11 were
 in python39._pth, add a line with '..' below '.' and remove the # in front of import site
 download get-pip.py
 python\python get-pip.py
-python\scripts\pip install pywin32 wxwidgets wxmplot pyvips
+python\scripts\pip install pywin32 wxwidgets wxmplot pyvips PySide6
 python\scripts\pip list
 Package             Version
 ------------------- -------
@@ -105,14 +113,18 @@ matplotlib          3.7.1
 numpy               1.25.0
 packaging           23.1
 Pillow              9.5.0
-pip                 23.3.2
+pip                 25.0.1
 pycparser           2.21
 pyparsing           3.1.0
+PySide6             6.9.0
+PySide6_Addons      6.9.0
+PySide6_Essentials  6.9.0
 python-dateutil     2.8.2
 pyvips              2.2.1
 pywin32             306
 PyYAML              6.0
 setuptools          67.6.1
+shiboken6           6.9.0
 six                 1.16.0
 webcolors           1.13
 wheel               0.40.0
@@ -130,6 +142,7 @@ import wx
 from pageBrowse import *
 from pageMeasure import *
 from pageHelp import *
+from pageFeedback import *
 
 # listen to a pipe for commands, such as showing a results page
 from CommandPipe import *
@@ -155,6 +168,7 @@ class MainFrame(mainFrame):
         self.addPage("Measure","Measure32.png",pageMeasure)
         self.addPage("Browse Results","Results32.png",pageBrowse)
         self.addPage("Help","Help32.png",pageHelp)
+        self.addPage("Feedback","Feedback32.png",pageFeedback)
         self.m_toolbar.Realize()
         activePage = wxGetApp().config.Read("page")
         if activePage == "":
@@ -267,9 +281,8 @@ class App(wx.App):
         self.SetTopWindow(self.frame)
         self.frame.Bind(wx.EVT_CLOSE, self.OnCloseMain)
 
-        # self._persistMgr.RegisterAndRestoreAll(self.frame)
         self._persistMgr.RegisterAndRestore(self.frame)
-        self.frame.Show()
+        self.frame.Show(True)
 
         if not self.pipe.listen(self.frame,0):
             print("error: could not open pipe " + QuaRepLiMiPipeName + "\r\n")

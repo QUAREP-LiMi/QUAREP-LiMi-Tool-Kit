@@ -110,7 +110,7 @@ class pageBrowse(formBrowse):
             folder = dlg.GetPath()
             if not os.path.isdir(folder):
                 os.mkdir(folder)
-            if not os.path.isdir(self.folder):
+            if not os.path.isdir(folder):
                 folder = ""
 
         self.SetFolder(folder,wxGetApp().config.Read("device"))

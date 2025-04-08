@@ -6,12 +6,12 @@ from wxApp import *
 import webbrowser
 
 
-class pageHelp(formHelp):
+class pageHelp(formHTML):
 
     def __init__(self, parent):
-        formHelp.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL, 'measureFrame')
-        self.m_htmlHelp.LoadFile(os.path.join(os.path.dirname(__file__), "Help.html"))
-        self.m_htmlHelp.Bind(wx.html.EVT_HTML_LINK_CLICKED, self.m_htmlHelpOnHtmlLinkClicked)
+        formHTML.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL, 'helpFrame')
+        self.m_html.LoadFile(os.path.join(os.path.dirname(__file__), "Help.html"))
+        self.m_html.Bind(wx.html.EVT_HTML_LINK_CLICKED, self.m_htmlOnHtmlLinkClicked)
 
     # saveModified method is called by the mainFrame before destroying this page: return wx.CANCEL to cancel
     def saveModified(self,options):
@@ -25,7 +25,7 @@ class pageHelp(formHelp):
     def stopWatch(self):
         return
 
-    def m_htmlHelpOnHtmlLinkClicked(self,event):
+    def m_htmlOnHtmlLinkClicked(self,event):
         linkinfo = event.GetLinkInfo()
         webbrowser.open(linkinfo.Href, new=2)
 

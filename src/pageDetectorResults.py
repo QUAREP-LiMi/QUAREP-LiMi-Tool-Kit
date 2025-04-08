@@ -210,11 +210,44 @@ class MultiPageTiffFrame(panelWithSlider):
         self.LoadPage(page)
         self.Thaw()
 
+# open text file with the correct encoding
+def OpenTxtFile(file,mode):
+    encoding = "utf-8"
+    fh = None
+    try:
+        fh = open(file, 'rb')
+    except:
+        pass
+    if not fh:
+        return None
+    file_data = bytearray()
+    try:
+        file_data = bytearray(fh.read(2))
+    except:
+        pass
+    if (file_data == bytearray(b'\xfe\xff')):
+        encoding = "utf-16-be"
+    elif (file_data == bytearray(b'\xff\xfe')):
+        encoding = "utf-16-le"
+    else:
+        try:
+            file_data.append(fh.read(1)[0])
+        except:
+            pass
+        if (file_data == bytearray(b'\xef\xbb\xbf')):
+            encoding = "utf-8"
+    # todo: if encoding not found use encdect.py to detect encoding
+    fh.close()
+    return open(file,'r',encoding=encoding)
+
 
 # the info file has on every line <key><tab><value>
 def ReadInfo(file):
-    reader = csv.reader(open(file,), delimiter='\t', quoting=csv.QUOTE_NONE)
     info = {}
+    fh = OpenTxtFile(file,'r')
+    if not fh:
+        return info
+    reader = csv.reader(fh, delimiter='\t', quoting=csv.QUOTE_NONE)
     for line in reader:
         full_line = ' '.join(line)
         match = re.match(r"\s*([^:]+):\s*(.+)",full_line)
@@ -224,6 +257,7 @@ def ReadInfo(file):
             if key and value:
                 info[key] = value
     return info
+
 
 # the results file has on every line <key>:  <value>
 def ReadResults(file):
@@ -569,8 +603,13 @@ class pageDetectorResults(panelDetectorResults):
             nd2info = os.path.join(os.path.dirname(__file__), r"NkNd2Info\NkNd2Info.exe")
             if os.path.isfile(nd2info):
                 args = [nd2info, 'textinfo', brightpath]
-                r = subprocess.run(args, capture_output=True)
-                info = r.stdout.decode("utf-8")
+                # sub process capture_output works first time, fails second time (error opening tmp file)
+                #r = subprocess.run(args, capture_output=True)
+                #info = r.stdout.decode("utf-8")
+                tmpfile = tempfile.TemporaryFile()
+                r = subprocess.run(args, stdout=tmpfile)
+                tmpfile.seek(0)
+                info = tmpfile.read().decode("utf-8")
                 info = info.replace(r"\r\n", "\n")
                 info = info.replace(r"\r", "")
                 info = info.replace(r'"', "")

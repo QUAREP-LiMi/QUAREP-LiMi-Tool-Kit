@@ -145,6 +145,34 @@ class formMeasure ( wx.Panel ):
 
 		m_pageSizer = wx.BoxSizer( wx.VERTICAL )
 
+		self.m_staticAll = wx.StaticText( self, wx.ID_ANY, u"Tools that work for all microscopes:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticAll.Wrap( -1 )
+
+		self.m_staticAll.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
+
+		m_pageSizer.Add( self.m_staticAll, 0, wx.ALL, 5 )
+
+		bSizer20 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_buttonSmartLPM = wx.Button( self, wx.ID_ANY, u"SmartLPM", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer20.Add( self.m_buttonSmartLPM, 0, wx.ALL, 5 )
+
+		self.m_buttonSmartLPMmanual = wx.Button( self, wx.ID_ANY, u"Smart LPM Manual", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer20.Add( self.m_buttonSmartLPMmanual, 0, wx.ALL, 5 )
+
+
+		m_pageSizer.Add( bSizer20, 0, wx.EXPAND, 5 )
+
+
+		m_pageSizer.Add( ( 0, 15), 0, wx.EXPAND, 5 )
+
+		self.m_staticBrand = wx.StaticText( self, wx.ID_ANY, u"Tools for a specific brand:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticBrand.Wrap( -1 )
+
+		self.m_staticBrand.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
+
+		m_pageSizer.Add( self.m_staticBrand, 0, wx.ALL, 5 )
+
 		bSizer40 = wx.BoxSizer( wx.HORIZONTAL )
 
 		self.m_staticText1 = wx.StaticText( self, wx.ID_ANY, u"Microscope Brand:", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -174,6 +202,8 @@ class formMeasure ( wx.Panel ):
 		self.Layout()
 
 		# Connect Events
+		self.m_buttonSmartLPM.Bind( wx.EVT_BUTTON, self.m_buttonSmartLPMOnButtonClick )
+		self.m_buttonSmartLPMmanual.Bind( wx.EVT_BUTTON, self.m_buttonSmartLPMmanualOnButtonClick )
 		self.m_brandChoice.Bind( wx.EVT_CHOICE, self.m_brandChoiceOnChoice )
 
 	def __del__( self ):
@@ -181,6 +211,12 @@ class formMeasure ( wx.Panel ):
 
 
 	# Virtual event handlers, override them in your derived class
+	def m_buttonSmartLPMOnButtonClick( self, event ):
+		event.Skip()
+
+	def m_buttonSmartLPMmanualOnButtonClick( self, event ):
+		event.Skip()
+
 	def m_brandChoiceOnChoice( self, event ):
 		event.Skip()
 
@@ -232,18 +268,18 @@ class panelTwoPanes ( wx.Panel ):
 
 
 ###########################################################################
-## Class formHelp
+## Class formHTML
 ###########################################################################
 
-class formHelp ( wx.Panel ):
+class formHTML ( wx.Panel ):
 
 	def __init__( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL, name = wx.EmptyString ):
 		wx.Panel.__init__ ( self, parent, id = id, pos = pos, size = size, style = style, name = name )
 
 		bSizer9 = wx.BoxSizer( wx.VERTICAL )
 
-		self.m_htmlHelp = wx.html.HtmlWindow( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.html.HW_SCROLLBAR_AUTO )
-		bSizer9.Add( self.m_htmlHelp, 1, wx.ALL|wx.EXPAND, 5 )
+		self.m_html = wx.html.HtmlWindow( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.html.HW_SCROLLBAR_AUTO )
+		bSizer9.Add( self.m_html, 1, wx.ALL|wx.EXPAND, 5 )
 
 
 		self.SetSizer( bSizer9 )

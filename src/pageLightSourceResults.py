@@ -366,21 +366,31 @@ class GraphFrame(wx.Panel):
             self.power = splitted[3 + more_ports] + " %"
 
     def Analyse(self, x_data, y_data):
+        minVal = float(min(y_data))
+        maxVal = float(max(y_data))
         if hasattr(self, 'protocol') and self.protocol == 'linear':
             try:
-                model = np.polyfit(x_data, y_data, 1)
-                a = model[0]
-                b = model[1]
-                chi2 = 0
+                chi2 = float(0)
+                #a,b = np.polyfit(x_data, y_data, 1)
+                #for i, t in enumerate(x_data):
+                #    # exclude the 0-point because dividing by 0 gives huge results
+                #    if x_data[i] > 0:
+                #        v = a * x_data[i] + b
+                #        if abs(v) > 0:
+                #            chi2 += pow(y_data[i] - v,2) / abs(v)
+                x = np.array(x_data)[:, np.newaxis]
+                fit_parameters, _, _, _ = np.linalg.lstsq(x, np.array(y_data), rcond=None)
+                a = fit_parameters[0]
                 for i, t in enumerate(x_data):
-                    v = a * x_data[i] + b
-                    chi2 += pow(y_data[i] - v,2) / v
-                self.results.SetLabel("linearity chi2: " + "{:f}".format(chi2))
+                    # exclude the 0-point because dividing by 0 gives huge results
+                    if x_data[i] > 0:
+                        v = a * x_data[i]
+                        if abs(v) > 0:
+                            chi2 += pow(y_data[i] - v,2) / abs(v)
+                self.results.SetLabel("min: " + "{:.1f}".format(minVal) + ", max: " + "{:.1f}".format(maxVal) + ", linearity chi2: " + "{:f}".format(chi2))
             except Exception:
                 self.results.SetLabel("linearity fit failed")
         else:
-            minVal = float(min(y_data))
-            maxVal = float(max(y_data))
             stability = 100. * (1. - ((maxVal - minVal) / (maxVal + minVal)))
             #cv = np.cov(y_data)
             nsd = calcNormalizedStandardDeviation(y_data)

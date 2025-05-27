@@ -81,16 +81,16 @@ class TextFrame(wx.TextCtrl):
         attr = wx.TextAttr()
         attr.SetTabs([tab_width_in_tenth_of_mm])
         self.SetDefaultStyle(attr)
-        wx.TextCtrl.SetEditable(self, True)
-        wx.TextCtrl.SetModified(self, False)
+        self.SetEditable(True)
+        self.SetModified(False)
         self.Draw()
 
     def Draw(self):
         self.LoadFile(str(self.txtfile))
 
     def IsModified(self):
-        modified = wx.TextCtrl.IsModified(self)
-        return modified
+        # to do: when switching to/from an empty device folder: the text control gets orphaned and excepts here
+        return wx.TextCtrl.IsModified(self)
 
     def SaveModified(self):
         if self.IsModified():

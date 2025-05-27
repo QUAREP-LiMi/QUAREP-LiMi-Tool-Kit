@@ -3,6 +3,10 @@ import subprocess, shlex
 import win32com.shell.shell as shell
 import wx
 import glob
+from  zipfile import ZipFile
+import tempfile
+import shutil
+import time
 from forms import *
 from wxApp import *
 
@@ -10,18 +14,31 @@ ZeissMacroName = "LPM-Zen_Blue.exe"
 ZeissMacroTitle = "Zeiss Zen Blue macros"
 ZeissMacroVersion = "1"
 
-NikonMacroName = "NikonQuarepMacros30.exe"
+NikonMacroName = "NikonQuarepMacros30.zip"
+NikonUtilsName = "NkMacroLibs_6.20.00.zip"
 NikonMacroTitle = "Nikon NIS-Elements macros"
 NikonMacroVersion = "30"
+
+install_tmp_folders = []
 
 def installZeissMacros():
     command = os.path.join(os.path.dirname(__file__), "macros\\" + ZeissMacroName)
     shell.ShellExecuteEx(lpVerb='runas', lpFile=command)
     wxGetApp().config.Write("ZeissMacroVersion", ZeissMacroVersion)
 
+def installZip(name):
+    zipfile = os.path.join(os.path.dirname(__file__), "macros",name)
+    zfh = ZipFile(zipfile,'r')
+    if zfh:
+        tmp = tempfile.TemporaryDirectory(".nkn").name
+        install_tmp_folders.append(tmp)
+        zfh.extractall(path=tmp)
+        file = os.path.join(tmp,"install.bat")
+        process = subprocess.Popen([os.environ['COMSPEC'],'/C',file])
+
 def installNikonMacros():
-    command = os.path.join(os.path.dirname(__file__), "macros\\" + NikonMacroName)
-    shell.ShellExecuteEx(lpVerb='runas', lpFile=command)
+    installZip(NikonUtilsName)
+    installZip(NikonMacroName)
     wxGetApp().config.Write("NikonMacroVersion", NikonMacroVersion)
 
 def checkMacros():
@@ -42,7 +59,11 @@ class pageMeasure(formMeasure):
         self.setBrand(self.brand_index)
 
     def onDestroy(self):
-        pass
+        for folder in install_tmp_folders:
+            try:
+                shutil.rmtree(folder)
+            except:
+                pass
 
     # saveModified method is called by the mainFrame before destroying this page: return wx.CANCEL to cancel
     def saveModified(self,options):

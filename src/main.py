@@ -4,11 +4,13 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.2.25"
-__date__ = "2025-04-08"
+__version__ = "0.2.26"
+__date__ = "2025-05-28"
 
 r'''
 history
+2025-05-28: 26: Nasser
+    upgraded SmartLPM to 1.0.3
 2025-05-27: 25: Kees
     replaced Nikon Macro .exe with .zip because of a conflict with Windows Defender
 2025-04-08: 24: Kees

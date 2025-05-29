@@ -57,6 +57,7 @@
 			<File Id="ProductIco" Source="Product.ico"/>
 			<File Id="runbat" Source="run.bat"/>
 			<File Id="run_debugbat" Source="run_debug.bat"/>
+			<File Id="smartlpmbat" Source="SmartLPM.bat"/>
 			<File Id="wxapppy" Source="wxApp.py"/>
 			<File Id="NkSplashini" Source="NkSplash.ini"/>
 			<RemoveFolder Id="RemoveQuaRepDatabaseStartMenuFolder" Directory="QuaRepToolKitStartMenuFolder" On="uninstall"/>

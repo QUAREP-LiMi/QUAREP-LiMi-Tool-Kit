@@ -4,11 +4,13 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.2.26"
-__date__ = "2025-05-28"
+__version__ = "0.2.27"
+__date__ = "2025-05-29"
 
 r'''
 history
+2025-05-29: 27: Nasser
+    upgraded SmartLPM to 1.0.4
 2025-05-28: 26: Nasser
     upgraded SmartLPM to 1.0.3
 2025-05-27: 25: Kees
@@ -102,6 +104,7 @@ PYTHON
 unpack a portable python 3.9 distribution to folder 'python' (3.10 and 3.11 were incompatible with wxPython)
 in python39._pth, add a line with '..' below '.' and remove the # in front of import site
 download get-pip.py
+!! run cmd.exe as Administrator to install the packages in the python folder instead of in C:\Users\%USER%\AppData\Roaming\Python
 python\python get-pip.py
 python\scripts\pip install pywin32 wxwidgets wxmplot pyvips PySide6
 python\scripts\pip list

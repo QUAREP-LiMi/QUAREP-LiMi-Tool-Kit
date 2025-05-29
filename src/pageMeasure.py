@@ -52,6 +52,7 @@ class pageMeasure(formMeasure):
 
     def __init__(self, parent):
         formMeasure.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL, 'measureFrame')
+        self.m_buttonSmartLPM.SetBitmap(wxGetApp().LoadBitmap("SmartLPM.png"))
         self.brand = wxGetApp().config.Read("brand")
         self.brand_index = self.m_brandChoice.FindString(self.brand)
         if self.brand_index == -1:

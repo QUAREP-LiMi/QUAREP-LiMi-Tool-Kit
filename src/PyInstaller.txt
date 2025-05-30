@@ -1,0 +1,10 @@
+1. Python modules
+PyInstaller runs in the context of the system python version.
+QLTK installer includes python from ~/python
+PyCharm runs with python from venv4
+Before making a distribution package, make sure the module versions of these pythons match.
+- delete c:\users\%USER%\AppData\Roaming\Python to remove all user installed modules
+- open a command prompt as admin (this will make that pip installs modules in the system folders
+- run 'python_upgrade.bat' to synchronize the python module versions
+- run 'PyInstaller main.spec' to create the package
+ 

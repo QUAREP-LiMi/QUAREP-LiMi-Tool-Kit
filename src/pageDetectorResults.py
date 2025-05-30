@@ -14,6 +14,8 @@ import win32api
 import wx.lib.agw.persist as PM
 import wx.grid
 import wxmplot
+import matplotlib
+matplotlib.use('WxAgg')   # to let PyInstaller know that we are using the Wx GUI library
 import matplotlib.pyplot as mpl;
 import subprocess
 

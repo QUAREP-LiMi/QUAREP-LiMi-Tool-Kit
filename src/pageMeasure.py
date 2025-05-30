@@ -78,7 +78,8 @@ class pageMeasure(formMeasure):
     # Virtual event handlers, override them in your derived class
     def m_buttonSmartLPMOnButtonClick(self, event):
         folder = os.path.dirname(__file__)
-        args = [os.path.join(folder, "python\\pythonw.exe"),os.path.join(folder, "SmartLPM\\SmartLPM.py")]
+        #args = [os.path.join(folder, "python\\pythonw.exe"),os.path.join(folder, "SmartLPM\\SmartLPM.py")]
+        args = [os.path.join(folder, "SmartLPM\\SmartLPM.exe")]
         subprocess.Popen(args)
 
     def m_buttonSmartLPMmanualOnButtonClick(self, event):

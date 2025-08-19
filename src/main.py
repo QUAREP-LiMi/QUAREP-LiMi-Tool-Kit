@@ -4,11 +4,14 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.2.27"
-__date__ = "2025-05-29"
+__version__ = "0.2.28"
+__date__ = "2025-08-25"
 
 r'''
 history
+2025-08-25: 28: Kees
+    NkSplash 1.0.1: fixed dead-lock, output/error logs are in c:\programdata
+    pyvips: log level is set to CRITICAL 
 2025-05-29: 27: Nasser
     upgraded SmartLPM to 1.0.4
 2025-05-28: 26: Nasser

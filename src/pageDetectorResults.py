@@ -39,6 +39,8 @@ vipshome = os.path.join(os.path.dirname(__file__), "vips")
 os.environ['PATH'] = vipshome + ';' + os.environ['PATH']
 import pyvips
 logging.info("vips version: " + str(pyvips.version(0))+"."+str(pyvips.version(1))+"."+str(pyvips.version(2)))
+logger = logging.getLogger('pyvips')
+logger.setLevel(logging.CRITICAL)
 
 # the noise brightness analysis generates images with size (1023,590).
 # show them scaled with g_widgetScale/10.

@@ -538,6 +538,7 @@ class pageLightSourceResults(panelTwoPanes):
         self.Freeze()
         panel = self.m_rightMainPanel
         panel.DestroyChildren()
+        self.widgets = {}
         self.widget_sizer = panel.GetSizer()
         self.widget_sizer.Clear()
         self.button_panel = self.m_rightTopPanel
@@ -586,7 +587,6 @@ class pageLightSourceResults(panelTwoPanes):
             item_data = tree.GetItemData(ti)
             path = Path(item_data['folder'])
             self.deviceDate = item_data['date']
-            self.widgets = {}
             for file in path.glob(item_data['date'] + "*.txt"):
                 if file.name.endswith("info.txt"):
                     border = 5

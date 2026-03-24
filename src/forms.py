@@ -12,6 +12,7 @@ import wx.xrc
 import wx.aui
 import wx.dataview
 import wx.html
+import wx.grid
 
 ###########################################################################
 ## Class mainFrame
@@ -556,6 +557,170 @@ class panelNone ( wx.Panel ):
 
 		self.SetSizer( bSizer18 )
 		self.Layout()
+
+	def __del__( self ):
+		pass
+
+
+###########################################################################
+## Class panelStageResults
+###########################################################################
+
+class panelStageResults ( wx.Panel ):
+
+	def __init__( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 947,300 ), style = wx.TAB_TRAVERSAL, name = wx.EmptyString ):
+		wx.Panel.__init__ ( self, parent, id = id, pos = pos, size = size, style = style, name = name )
+
+		bSizer21 = wx.BoxSizer( wx.VERTICAL )
+
+		bSizer22 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_header = wx.StaticText( self, wx.ID_ANY, u"Stage Reproducability Results", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_header.Wrap( -1 )
+
+		bSizer22.Add( self.m_header, 0, wx.ALL, 5 )
+
+		self.m_bntSetTolerance = wx.Button( self, wx.ID_ANY, u"0.5", wx.DefaultPosition, wx.Size( 120,-1 ), 0 )
+		self.m_bntSetTolerance.SetToolTip( u"Set Tolerance" )
+
+		bSizer22.Add( self.m_bntSetTolerance, 0, wx.LEFT|wx.RIGHT, 5 )
+
+		self.m_caption = wx.StaticText( self, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_caption.Wrap( -1 )
+
+		bSizer22.Add( self.m_caption, 1, wx.ALL|wx.EXPAND, 5 )
+
+
+		bSizer21.Add( bSizer22, 0, wx.EXPAND, 5 )
+
+		self.m_grid = wx.grid.Grid( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+
+		# Grid
+		self.m_grid.CreateGrid( 0, 24 )
+		self.m_grid.EnableEditing( False )
+		self.m_grid.EnableGridLines( True )
+		self.m_grid.EnableDragGridSize( False )
+		self.m_grid.SetMargins( 0, 0 )
+
+		# Columns
+		self.m_grid.AutoSizeColumns()
+		self.m_grid.EnableDragColMove( False )
+		self.m_grid.EnableDragColSize( True )
+		self.m_grid.SetColLabelValue( 0, u"repeat" )
+		self.m_grid.SetColLabelValue( 1, u"small" )
+		self.m_grid.SetColLabelValue( 2, u"large" )
+		self.m_grid.SetColLabelValue( 3, u"speed" )
+		self.m_grid.SetColLabelValue( 4, u"x-s-a" )
+		self.m_grid.SetColLabelValue( 5, u"x-s-l" )
+		self.m_grid.SetColLabelValue( 6, u"x-s-r" )
+		self.m_grid.SetColLabelValue( 7, u"x-s-b" )
+		self.m_grid.SetColLabelValue( 8, u"x-s-f" )
+		self.m_grid.SetColLabelValue( 9, u"y-s-a" )
+		self.m_grid.SetColLabelValue( 10, u"y-s-l" )
+		self.m_grid.SetColLabelValue( 11, u"y-s-r" )
+		self.m_grid.SetColLabelValue( 12, u"y-s-b" )
+		self.m_grid.SetColLabelValue( 13, u"y-s-f" )
+		self.m_grid.SetColLabelValue( 14, u"x-l-a" )
+		self.m_grid.SetColLabelValue( 15, u"x-l-l" )
+		self.m_grid.SetColLabelValue( 16, u"x-l-r" )
+		self.m_grid.SetColLabelValue( 17, u"x-l-b" )
+		self.m_grid.SetColLabelValue( 18, u"x-l-f" )
+		self.m_grid.SetColLabelValue( 19, u"y-l-a" )
+		self.m_grid.SetColLabelValue( 20, u"y-l-l" )
+		self.m_grid.SetColLabelValue( 21, u"y-l-r" )
+		self.m_grid.SetColLabelValue( 22, u"y-l-b" )
+		self.m_grid.SetColLabelValue( 23, u"y-l-f" )
+		self.m_grid.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+		# Rows
+		self.m_grid.EnableDragRowSize( True )
+		self.m_grid.SetRowLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+		# Label Appearance
+
+		# Cell Defaults
+		self.m_grid.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
+		bSizer21.Add( self.m_grid, 1, 0, 5 )
+
+
+		self.SetSizer( bSizer21 )
+		self.Layout()
+
+		# Connect Events
+		self.m_bntSetTolerance.Bind( wx.EVT_BUTTON, self.m_bntSetToleranceOnButtonClick )
+		self.m_grid.Bind( wx.EVT_MOTION, self.m_gridOnMotion )
+
+	def __del__( self ):
+		pass
+
+
+	# Virtual event handlers, override them in your derived class
+	def m_bntSetToleranceOnButtonClick( self, event ):
+		event.Skip()
+
+	def m_gridOnMotion( self, event ):
+		event.Skip()
+
+
+###########################################################################
+## Class dlgSetTolerance
+###########################################################################
+
+class dlgSetTolerance ( wx.Dialog ):
+
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Set Warning Limit", pos = wx.DefaultPosition, size = wx.Size( 428,164 ), style = wx.DEFAULT_DIALOG_STYLE )
+
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+		bSizer23 = wx.BoxSizer( wx.VERTICAL )
+
+
+		bSizer23.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+		bSizer24 = wx.BoxSizer( wx.HORIZONTAL )
+
+
+		bSizer24.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+		self.m_staticText25 = wx.StaticText( self, wx.ID_ANY, u"Label red when standard deviation exceeds:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText25.Wrap( -1 )
+
+		bSizer24.Add( self.m_staticText25, 0, wx.ALL, 5 )
+
+		self.m_txtTolerance = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,20 ), 0|wx.BORDER_STATIC )
+		bSizer24.Add( self.m_txtTolerance, 0, wx.ALL, 5 )
+
+
+		bSizer24.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+
+		bSizer23.Add( bSizer24, 1, wx.EXPAND, 5 )
+
+
+		bSizer23.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+		bSizer26 = wx.BoxSizer( wx.HORIZONTAL )
+
+
+		bSizer26.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+		self.m_bntOK = wx.Button( self, wx.ID_OK, u"OK", wx.DefaultPosition, wx.DefaultSize, 0 )
+
+		self.m_bntOK.SetDefault()
+		bSizer26.Add( self.m_bntOK, 0, wx.ALL, 5 )
+
+
+		bSizer26.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+
+		bSizer23.Add( bSizer26, 0, wx.EXPAND, 5 )
+
+
+		self.SetSizer( bSizer23 )
+		self.Layout()
+
+		self.Centre( wx.BOTH )
 
 	def __del__( self ):
 		pass

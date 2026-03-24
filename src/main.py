@@ -4,11 +4,14 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.2.28"
-__date__ = "2025-08-25"
+__version__ = "0.3.29"
+__date__ = "2026-03-13"
 
 r'''
 history
+2026-03-24: 29: Kees
+    Added Nikon Stage macro button from NikonQuarepMacros31.
+    Added Stage Results page
 2025-08-25: 28: Kees
     NkSplash 1.0.1: fixed dead-lock, output/error logs are in c:\programdata
     pyvips: log level is set to CRITICAL 

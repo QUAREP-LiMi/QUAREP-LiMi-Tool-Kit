@@ -12,12 +12,12 @@ from wxApp import *
 
 ZeissMacroName = "LPM-Zen_Blue.exe"
 ZeissMacroTitle = "Zeiss Zen Blue macros"
-ZeissMacroVersion = "1"
+ZeissMacroVersion = 1
 
-NikonMacroName = "NikonQuarepMacros30.zip"
+NikonMacroName = "NikonQuarepMacros32.zip"
 NikonUtilsName = "NkMacroLibs_6.20.00.zip"
 NikonMacroTitle = "Nikon NIS-Elements macros"
-NikonMacroVersion = "30"
+NikonMacroVersion = 32
 
 install_tmp_folders = []
 
@@ -43,9 +43,11 @@ def installNikonMacros():
 
 def checkMacros():
     brand = wxGetApp().config.Read("brand")
-    if (brand == "Nikon") and (wxGetApp().config.Read("NikonMacroVersion") != NikonMacroVersion):
+    curVersion = int(wxGetApp().config.Read("NikonMacroVersion"))
+    if (brand == "Nikon") and (curVersion < NikonMacroVersion):
         installNikonMacros()
-    if (brand == "Zeiss") and (wxGetApp().config.Read("ZeissMacroVersion") != ZeissMacroVersion):
+    curVersion = int(wxGetApp().config.Read("ZeissMacroVersion"))
+    if (brand == "Zeiss") and (curVersion < ZeissMacroVersion):
         installZeissMacros()
 
 class pageMeasure(formMeasure):
@@ -120,6 +122,10 @@ class pageMeasure(formMeasure):
             self.m_eyeButton.SetBitmap(wxGetApp().LoadBitmap("Camera64.png"))
             sizer.Add(self.m_eyeButton, 0, wx.ALL, 5)
             self.m_eyeButton.Bind(wx.EVT_BUTTON, self.m_eyeButtonOnButtonClick)
+            self.m_pointerButton = wx.Button(self.m_mainPanel, wx.ID_ANY,"Measure Stage Repeatability", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.m_pointerButton.SetBitmap(wxGetApp().LoadBitmap("Stage64.png"))
+            sizer.Add(self.m_pointerButton, 0, wx.ALL, 5)
+            self.m_pointerButton.Bind(wx.EVT_BUTTON, self.m_pointerButtonOnButtonClick)
         elif brand == "Zeiss":
             scripts = glob.glob(r"C:\Users\Public\Documents\Carl Zeiss\ZEN\Documents\Macros\QUAREP-LPM*.py")
             if len(scripts):
@@ -139,5 +145,8 @@ class pageMeasure(formMeasure):
         command = '"c:\\program files\\nis-elements\\nis_ar.exe" -m "c:\\program files\\nis-elements\\macros\\MeasureDetectorGain.mac"'
         subprocess.Popen(shlex.split(command))
 
+    def m_pointerButtonOnButtonClick(self, event):
+        command = '"c:\\program files\\nis-elements\\nis_ar.exe" -m "c:\\program files\\nis-elements\\macros\\MeasureStageRepeatability.mac"'
+        subprocess.Popen(shlex.split(command))
 
 

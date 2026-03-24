@@ -17,6 +17,7 @@ from forms import *
 from wxApp import *
 from pageLightSourceResults import *
 from pageDetectorResults import *
+from pageStageResults import *
 from pageNoPage import *
 
 def findTreeItem(tree, parent, name):
@@ -91,7 +92,8 @@ class pageBrowse(formBrowse):
         self.categories = {
             "none": {"name": "none", "folder": "", "class": pageNoPage},
             "Detectors": {"name": "Detectors", "folder": "Detectors", "class": pageDetectorResults },
-            "Light Sources": {"name": "Light Sources", "folder": "Light Sources", "class": pageLightSourceResults}
+            "Light Sources": {"name": "Light Sources", "folder": "Light Sources", "class": pageLightSourceResults},
+            "Stages": {"name": "Stages", "folder": "Stages", "class": pageStageResults}
         }
         self.folderWatch = None
         self.folder = ""

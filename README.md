@@ -4,16 +4,21 @@ Automation tools for microscope quality assessment.
 The tool kit is a python script to start quality measurements, analyze them and show the results. \
 It acts as a minimal glue between different existing solutions.
 
-Version 0.2.21 is the latest release.\
-https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/releases \
-This version was tested during the QUAREP workshops at ELMI 2024 in Manchester and at several Nikon systems.
+Version 0.3.29 is the latest release: https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/releases \
+Version 28 was tested during the QUAREP workshops at ELMI 2024, 2025 and at several Nikon systems. \
+Version 29 includes new features that will be presented during ELMI 2026.
 
 The Tool Kit includes Nikon NIS-Elements macros. Support for other brands and measurements is in progress.
 A python distribution is included, check out the comments in the main.py file to learn module requirements.
 
 &nbsp;
 ## Installation
-Install the .msi package or unpack the .zip archive to the microscope PC or a portable storage device.
+Install the .msi package or unpack the .zip archive to the microscope PC or a portable storage device. \
+Start the QUAREP-LiMi Tool Kit from the start menu (All Programs | QUAREP | QUAREP-LiMi Tool Kit) or double click the 'run.bat' file of the portable distribution.
+On the 'Measure' page, select your microscope brand.\
+When 'Nikon' is selected, you will be prompted to install the Nikon macros (including the Thorlabs power meter driver):
+
+<img width="523" height="382" alt="msr_0" src="https://github.com/user-attachments/assets/b9fb0be1-1cbf-40b5-bf7d-bc88cc5bb92b" />
 
 &nbsp;
 ## Illuminator Power Linearity and Stability
@@ -26,12 +31,6 @@ When connected to the power meter, the Thorlabs Temperature Probe reading will b
 The macro runs NIS-AR 5.2 or later. For NIS-BR the advanced interpreter license is required.
 The macro should work with any multi-line light source controlled by NIS-Elements.
 The light sources for the Nikon point-scan confocals are not supported.
-
-Start the QUAREP-LiMi Tool Kit from the start menu (All Programs | QUAREP | QUAREP-LiMi Tool Kit) or double click the 'run.bat' file of the portable distribution.
-On the 'Measure' page, select your microscope brand.\
-When 'Nikon' is selected, you will be prompted to install the Nikon macros (including the Thorlabs power meter driver):
-
-![image](https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/assets/98902202/069e208c-423d-4d26-999f-f40ae0507597)
 
 To start the illumination power linearity and stability measurements macro, press the big button with the lamp.
 
@@ -87,4 +86,21 @@ The main dialog allows defining several tests. Press the 'Help' button to opens 
 After the Dark and Bright image series are captured, the Tool Kit will automatically start the analysis and show the results:
 
 <img width="1003" alt="QLTK_Detector" src="https://github.com/user-attachments/assets/a70a622f-204e-4c0d-9c5a-9bd85e1e0194">
+
+&nbsp;
+## Stage Repeatability 
+Version 29 includes the NIS-Elements macros to run the QUAREP Working Group 6 published protocol to assess stage repeatability.
+After the experiment, the images will be thresholded (there must be only one spot in the FOV),
+the position of the tracking mark is recorded and the standard deviation of the positions is calculated.
+
+Press the big button with the arrows to start the macro.
+The macro prompts for the following parameters:
+<img width="644" height="273" alt="msr_1" src="https://github.com/user-attachments/assets/7a43d637-54fa-41bb-b0d8-4287f3087344" /> 
+
+The results will be shown separately for X,Y, direction and shift distance:
+<img width="782" height="791" alt="msr_2" src="https://github.com/user-attachments/assets/1304311e-48a6-4722-a937-61d7f257d9af" />
+
+The QUAREP-LiMi Tool Kit Browse page will show the results of all tests in a table.
+It results that exceed the warning limit are highlighted in red.
+ <img width="1486" height="237" alt="msr_3" src="https://github.com/user-attachments/assets/2295b9cd-982b-4fb8-8815-8888c29bb045" />
 

@@ -14,6 +14,10 @@ ZeissMacroName = "LPM-Zen_Blue.exe"
 ZeissMacroTitle = "Zeiss Zen Blue macros"
 ZeissMacroVersion = 1
 
+# due to conflicts with anti-virus, the normal .exe could not be used
+# instead, these are just the simple .zip versions, which are unpacked
+# in a temporary folder and installed by executing install.bat
+# note: the NkMacroLibs archive must be modified (remove NkMacroLibs subfolder)
 NikonMacroName = "NikonQuarepMacros32.zip"
 NikonUtilsName = "NkMacroLibs_6.20.00.zip"
 NikonMacroTitle = "Nikon NIS-Elements macros"
@@ -24,7 +28,7 @@ install_tmp_folders = []
 def installZeissMacros():
     command = os.path.join(os.path.dirname(__file__), "macros\\" + ZeissMacroName)
     shell.ShellExecuteEx(lpVerb='runas', lpFile=command)
-    wxGetApp().config.Write("ZeissMacroVersion", ZeissMacroVersion)
+    wxGetApp().config.Write("ZeissMacroVersion", str(ZeissMacroVersion))
 
 def installZip(name):
     zipfile = os.path.join(os.path.dirname(__file__), "macros",name)
@@ -39,7 +43,7 @@ def installZip(name):
 def installNikonMacros():
     installZip(NikonUtilsName)
     installZip(NikonMacroName)
-    wxGetApp().config.Write("NikonMacroVersion", NikonMacroVersion)
+    wxGetApp().config.Write("NikonMacroVersion", str(NikonMacroVersion))
 
 def checkMacros():
     brand = wxGetApp().config.Read("brand")

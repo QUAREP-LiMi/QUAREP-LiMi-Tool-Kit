@@ -4,11 +4,13 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.3.29"
-__date__ = "2026-03-13"
+__version__ = "0.3.30"
+__date__ = "2026-03-27"
 
 r'''
 history
+2026-03-27: 30: Kees
+    NikonQuarepMacros version 33 (fixed flaws in StageRepeatability.mac version 8)
 2026-03-24: 29: Kees
     Added Nikon Stage macro button from NikonQuarepMacros31.
     Added Stage Results page

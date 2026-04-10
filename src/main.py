@@ -4,11 +4,14 @@
 
 __author__ = "Kees van der Oord <Kees.van.der.Oord@nikon.com>"
 __cvsid__ = "QuaRepDataBrowser.main.py"
-__version__ = "0.3.30"
-__date__ = "2026-03-27"
+__version__ = "0.3.31"
+__date__ = "2026-04-10"
 
 r'''
 history
+2026-03-27: 31: Kees
+    pageMeasure: fixed int() exception when NikonMacroVersion was not defined
+    main: moved settings from HKCU to ProgramData
 2026-03-27: 30: Kees
     NikonQuarepMacros version 33 (fixed flaws in StageRepeatability.mac version 8)
 2026-03-24: 29: Kees
@@ -288,7 +291,23 @@ class App(wx.App):
             if os.path.exists(_oldConfigFile):
                 shutil.copy(_oldConfigFile,_configFile)
         self._persistMgr.SetPersistenceFile(_configFile)
-        self.config = wx.Config("QuaRepToolKit")
+
+        # version 31: move settings from USER registry to global ini file
+        #self.config = wx.Config("QuaRepToolKit")
+        _configFile = os.environ['ProgramData'] + "\\QuaRep\\QuaRepToolKit\\QuaRepToolKitSettings.ini"
+        migrate = not os.path.isfile(_configFile)
+        self.config = wx.FileConfig(localFilename=_configFile, style=wx.CONFIG_USE_LOCAL_FILE)
+        if migrate:
+            oldConfig = wx.Config("QuaRepToolKit")
+            more, entry_name, index = oldConfig.GetFirstEntry()
+            while more:
+                if entry_name == "detectorAutoProcess":
+                    self.config.WriteInt(entry_name, oldConfig.ReadInt(entry_name, 1))
+                else:
+                    self.config.Write(entry_name,oldConfig.Read(entry_name, ""))
+                more, entry_name, index = oldConfig.GetNextEntry(index)
+            del oldConfig
+
         self.iconFolder = os.path.join(os.path.dirname(__file__), "icons")
 
         checkMacros()

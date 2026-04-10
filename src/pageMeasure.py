@@ -47,10 +47,10 @@ def installNikonMacros():
 
 def checkMacros():
     brand = wxGetApp().config.Read("brand")
-    curVersion = int(wxGetApp().config.Read("NikonMacroVersion"))
+    curVersion = int(wxGetApp().config.Read("NikonMacroVersion","0"))
     if (brand == "Nikon") and (curVersion < NikonMacroVersion):
         installNikonMacros()
-    curVersion = int(wxGetApp().config.Read("ZeissMacroVersion"))
+    curVersion = int(wxGetApp().config.Read("ZeissMacroVersion","0"))
     if (brand == "Zeiss") and (curVersion < ZeissMacroVersion):
         installZeissMacros()
 

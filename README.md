@@ -20,12 +20,14 @@ When 'Nikon' is selected, you will be prompted to install the Nikon macros (incl
 
 <img width="523" height="382" alt="msr_0" src="https://github.com/user-attachments/assets/b9fb0be1-1cbf-40b5-bf7d-bc88cc5bb92b" />
 
+  
+_**Microsoft Visual C++ Redistributables Package Setup Failed**_  
 The installation of the Nikon macros is implemented in a simple window batch file that might stumble on details: \
 The **Microsoft Visual C++ Redistributables Package** installation fails when a newer (and better) version is already installed. \
 Unfortunately, the message "Setup failed" is not informing you on that. You can just dismiss this error dialog.
 
-_NIS macro error **cannot evaluate** error_  
-When the NIS-Elements installation is modified using the installer package, some of the required libraries might be reverted back to older versions. \
+_**NIS macro error cannot evaluate error**_  
+When the NIS-Elements installation is modified using the installer package, some of the required libraries might be reverted back to older versions.
 If you encounter the **cannot evaluate** error please re-install the macro files manually:
 - Locate the two .zip files in de folder c:\program files\quarep-limi\quarep limi toolkit\macros.
   The structure in these files matches the structure on how to should end up in the C:\ drive.

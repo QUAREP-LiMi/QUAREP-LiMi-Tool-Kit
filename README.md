@@ -20,7 +20,22 @@ When 'Nikon' is selected, you will be prompted to install the Nikon macros (incl
 
 <img width="523" height="382" alt="msr_0" src="https://github.com/user-attachments/assets/b9fb0be1-1cbf-40b5-bf7d-bc88cc5bb92b" />
 
-&nbsp;
+The installation of the Nikon macros is implemented in a simple window batch file that might stumble on details: \
+The **Microsoft Visual C++ Redistributables Package** installation fails when a newer (and better) version is already installed. \
+Unfortunately, the message "Setup failed" is not informing you on that. You can just dismiss this error dialog.
+
+_NIS macro error **cannot evaluate** error_
+When the NIS-Elements installation is modified using the installer package, some of the required libraries might be reverted back to older versions. \
+If you encounter the **cannot evaluate** error please re-install the macro files manually:
+- Locate the two .zip files in de folder c:\program files\quarep-limi\quarep limi toolkit\macros.
+  The structure in these files matches the structure on how to should end up in the C:\ drive.
+- Stop NIS-Elements.
+- Unpack the .zip files to some temporary folder.
+- Drag the 'Program Files' folder in the root of the zip file to the C:\ drive.
+  This assumes NIS is installed in c:\program files\nis-elements.
+  If NIS is installed at a different location, you have to select all files in the zip file folder "~\Program Files\NIS-Elements" and drag them to the NIS installation folder.
+
+
 ## Illuminator Power Linearity and Stability
 The QUAREP-LiMi Tool Kit supports visualization of illumination power linearity and stability results on any microscope system. \
 Macros for automatic measurements on Nikon microscope system are included in the tool kit. \

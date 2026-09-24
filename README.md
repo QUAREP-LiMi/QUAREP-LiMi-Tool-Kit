@@ -46,11 +46,17 @@ If that does not help, copy the files manually to the correct location:
 &nbsp;
 ## Illuminator Power Linearity and Stability
 The QUAREP-LiMi Tool Kit supports visualization of illumination power linearity and stability results on any microscope system. \
-Macros for automatic measurements on Nikon microscope system are included in the tool kit and can be started from the 'Measure' page.\
-Scripts for Zeiss systems can be found here: https://github.com/QUAREP-LiMi/WG1-Automation/tree/main/Microscope_Systems. \
-For other systems, use the 'SmartLPM' tool on the 'Measure' page.
+There are three tools to measure the power automatically.
 
-_**NIS-Elements MeasurePowerStability.mac**_  
+_**SmartLPM**_  
+The 'SmartLPM' tool included in the toolkit can be used to track the power off any automated microscope using a Thorlabs power meter. \
+The SmartLPM tool can be started by pressing the SmartLPM button on the Measure page. \
+Instructions are found on the SmartLPM repository: https://github.com/QUAREP-LiMi/SmartLPM.
+
+_**Zeiss scripts**_  
+Scripts for Zeiss systems can be found here: https://github.com/QUAREP-LiMi/WG1-Automation/tree/main/Microscope_Systems. \
+
+_**Nikon NIS-Elements MeasurePowerStability.mac**_  
 The Nikon NIS-Elements macro supports measuring the light with the camera or a Thorlabs Optical Power Meter (PM100A, PM100D, PM100USB, PM400). 
 When connected to the power meter, the Thorlabs Temperature Probe reading will be recorded as wel.
 The macro runs NIS-AR 5.2 or later. For NIS-BR the advanced interpreter license is required.
@@ -98,7 +104,7 @@ The information panel can be edited to add extra information.
 The QUAREP-LiMi Tool Kit includes the [analysis tool for inhomogeneous illumination](https://github.com/mcfaddendavid/betalight-calibration/releases) from David McFadden to calculate the detector photo conversion factor, capacity, read-noise and other detector quality parameters. 
 A macro for Nikon NIS-Elements is included to capture the required images.
 
-_**NIS-Elements MeasureDetectorGain.mac**_  
+_**Nikon NIS-Elements MeasureDetectorGain.mac**_  
 To start the Detector gain macro, press the big button with the lamp.
 
 On the first dialog, you can enter information on the system and reason for the measurements:
@@ -117,7 +123,7 @@ After the Dark and Bright image series are captured, the Tool Kit will automatic
 ## Stage Repeatability 
 Version 29 includes the NIS-Elements macros to run the QUAREP Working Group 6 published protocol to assess stage repeatability.
 
-_**NIS-Elements MeasureStageRepeatability.mac**_  
+_**Nikon NIS-Elements MeasureStageRepeatability.mac**_  
 This macro guides you through the capture of the QUAREP-LiMi protocol for stage repeatiblity.
 After the experiment, the images will be thresholded (there must be only one spot in the FOV),
 the position of the tracking mark is recorded and the standard deviation of the positions is calculated.

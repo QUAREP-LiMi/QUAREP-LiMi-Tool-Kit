@@ -14,6 +14,7 @@ A python distribution is included, check out the comments in the main.py file to
 &nbsp;
 ## Get notified when a new version is released
 To receive a notification when a new release is published, press the Watch dropdown button, select Custom and check the 'Releases' option:
+
 <img width="358" height="515" alt="Github_Notifications" src="https://github.com/user-attachments/assets/bb6541ad-bb52-4df5-9c54-c2500172053e" />
 
 &nbsp;

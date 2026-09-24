@@ -4,12 +4,17 @@ Automation tools for microscope quality assessment.
 The tool kit is a python script to start quality measurements, analyze them and show the results. \
 It acts as a minimal glue between different existing solutions.
 
-Version 0.3.29 is the latest release: https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/releases \
+Version 0.3.31 is the latest release: https://github.com/QUAREP-LiMi/QUAREP-LiMi-Tool-Kit/releases \
 Version 28 was tested during the QUAREP workshops at ELMI 2024, 2025 and at several Nikon systems. \
-Version 29 includes new features that will be presented during ELMI 2026.
+Version 29 includes new features that were presented during ELMI 2026.
 
 The Tool Kit includes Nikon NIS-Elements macros. Support for other brands and measurements is in progress.
 A python distribution is included, check out the comments in the main.py file to learn module requirements.
+
+&nbsp;
+## Get notified when a new version is released
+To receive a notification when a new release is published, press the Watch dropdown button, select Custom and check the 'Releases' option:
+<img width="358" height="515" alt="Github_Notifications" src="https://github.com/user-attachments/assets/bb6541ad-bb52-4df5-9c54-c2500172053e" />
 
 &nbsp;
 ## Installation
@@ -20,15 +25,15 @@ When 'Nikon' is selected, you will be prompted to install the Nikon macros (incl
 
 <img width="523" height="382" alt="msr_0" src="https://github.com/user-attachments/assets/b9fb0be1-1cbf-40b5-bf7d-bc88cc5bb92b" />
 
-  
 _**Microsoft Visual C++ Redistributables Package Setup Failed**_  
 The installation of the Nikon macros is implemented in a simple window batch file that might stumble on details: \
 The **Microsoft Visual C++ Redistributables Package** installation fails when a newer (and better) version is already installed. \
 Unfortunately, the message "Setup failed" is not informing you on that. You can just dismiss this error dialog.
 
 _**NIS macro error cannot evaluate error**_  
-When the NIS-Elements installation is modified using the installer package, some of the required libraries might be reverted back to older versions.
-If you encounter the **cannot evaluate** error please re-install the macro files manually:
+You will run into this problem when NIS is not installed in the standard folder C:\Program Files\NIS-Elements, or when the NIS installation was modified and reverted some libraries back to older versions.
+When you encounter the **cannot evaluate** error please re-install the macro files by selection the 'Nikon' brand again on the 'measure' page.
+If that does not help, copy the files manually to the correct location:
 - Locate the two .zip files in de folder c:\program files\quarep-limi\quarep limi toolkit\macros.
   The structure in these files matches the structure on how to should end up in the C:\ drive.
 - Stop NIS-Elements.
@@ -37,12 +42,14 @@ If you encounter the **cannot evaluate** error please re-install the macro files
   This assumes NIS is installed in c:\program files\nis-elements.
   If NIS is installed at a different location, you have to select all files in the zip file folder "~\Program Files\NIS-Elements" and drag them to the NIS installation folder.
 
-
+&nbsp;
 ## Illuminator Power Linearity and Stability
 The QUAREP-LiMi Tool Kit supports visualization of illumination power linearity and stability results on any microscope system. \
-Macros for automatic measurements on Nikon microscope system are included in the tool kit. \
-Scripts for Zeiss systems can be found here: https://github.com/QUAREP-LiMi/WG1-Automation/tree/main/Microscope_Systems. 
+Macros for automatic measurements on Nikon microscope system are included in the tool kit and can be started from the 'Measure' page.\
+Scripts for Zeiss systems can be found here: https://github.com/QUAREP-LiMi/WG1-Automation/tree/main/Microscope_Systems. \
+For other systems, use the 'SmartLPM' tool on the 'Measure' page.
 
+_**NIS-Elements MeasurePowerStability.mac**_  
 The Nikon NIS-Elements macro supports measuring the light with the camera or a Thorlabs Optical Power Meter (PM100A, PM100D, PM100USB, PM400). 
 When connected to the power meter, the Thorlabs Temperature Probe reading will be recorded as wel.
 The macro runs NIS-AR 5.2 or later. For NIS-BR the advanced interpreter license is required.
@@ -90,6 +97,7 @@ The information panel can be edited to add extra information.
 The QUAREP-LiMi Tool Kit includes the [analysis tool for inhomogeneous illumination](https://github.com/mcfaddendavid/betalight-calibration/releases) from David McFadden to calculate the detector photo conversion factor, capacity, read-noise and other detector quality parameters. 
 A macro for Nikon NIS-Elements is included to capture the required images.
 
+_**NIS-Elements MeasureDetectorGain.mac**_  
 To start the Detector gain macro, press the big button with the lamp.
 
 On the first dialog, you can enter information on the system and reason for the measurements:
@@ -107,6 +115,9 @@ After the Dark and Bright image series are captured, the Tool Kit will automatic
 &nbsp;
 ## Stage Repeatability 
 Version 29 includes the NIS-Elements macros to run the QUAREP Working Group 6 published protocol to assess stage repeatability.
+
+_**NIS-Elements MeasureStageRepeatability.mac**_  
+This macro guides you through the capture of the QUAREP-LiMi protocol for stage repeatiblity.
 After the experiment, the images will be thresholded (there must be only one spot in the FOV),
 the position of the tracking mark is recorded and the standard deviation of the positions is calculated.
 
